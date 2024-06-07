@@ -33,7 +33,7 @@ const NavLinks = () => {
           transition={{ delay: 2.4, duration: 0.5, type: "spring" }}
         >
           {/* Home link */}
-          <NavLink to="/my-portfolio" onClick={() => setIsMenuOpen(false)}>
+          <NavLink to="" onClick={() => setIsMenuOpen(false)}>
             Home
           </NavLink>
         </motion.div>

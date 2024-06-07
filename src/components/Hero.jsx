@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import Typewriter from "typewriter-effect";
 import landingImage from "../images/suit.png";
@@ -9,8 +10,7 @@ import SocialIcons from "./SocialIcons";
  * @component
  * @param {string} name - The name to be displayed in the hero section.
  */
-
-const Hero = ({ name }) => {
+const Hero = ({ name, views }) => {
   // Styles for various elements
   const styles = {
     landingImage: {
@@ -38,6 +38,7 @@ const Hero = ({ name }) => {
       paddingBottom: "28px",
     },
   };
+
   return (
     <>
       <div className="textContainer" style={styles.textContainer}>
@@ -65,7 +66,15 @@ const Hero = ({ name }) => {
               cursor: "",
             }}
             onInit={(typewriter) => {
-              typewriter.changeDelay(50).typeString("Software Engineer Intern").start();
+              typewriter
+                .changeDelay(40)
+                .typeString(
+                  `Software Engineer Intern<br><br>
+                   <p style="font-size: 12pt;">
+                     Page Visits: <span class='counter-number'>${views}</span>
+                   </p>`
+                )
+                .start();
             }}
           />
         </motion.div>
@@ -79,11 +88,15 @@ const Hero = ({ name }) => {
           transition={{ delay: 1, duration: 1.5, ease: "easeInOut" }}
           style={styles.landingImage}
           src={landingImage}
-          alt="Ryan PHam"
+          alt="Ryan Pham"
         />
       </div>
       {/* Displaying social icons */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, ease: "easeInOut" }}>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, ease: "easeInOut" }}
+      >
         <SocialIcons />
       </motion.div>
     </>

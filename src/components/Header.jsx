@@ -13,7 +13,7 @@ const Header = () => {
   return (
     <header className="header">
       {/* Link to the home page */}
-      <NavLink to="/my-portfolio">
+      <NavLink to="">
         {/* Animated logo */}
         <motion.div
           initial={{ x: -100, opacity: 0 }}
