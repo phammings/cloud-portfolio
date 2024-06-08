@@ -19,12 +19,15 @@ jobs:
           terraform_version: 1.0.0
 
       - name: Terraform init
+        working-direectory: /infra
         run: terraform init
 
       - name: Terraform plan
+        working-direectory: /infra
         run: terraform plan
 
       - name: Terraform apply
+        working-direectory: /infra
         run: terraform apply -auto-approve
         env:
           TF_VAR_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
