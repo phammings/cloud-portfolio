@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - main
+      - main
 
 jobs:
   terraform:
@@ -19,15 +19,15 @@ jobs:
           terraform_version: 1.0.0
 
       - name: Terraform init
-        working-directory: /infra
+        working-directory: ${{ github.workspace }}/infra
         run: terraform init
 
       - name: Terraform plan
-        working-directory: /infra
+        working-directory: ${{ github.workspace }}/infra
         run: terraform plan
 
       - name: Terraform apply
-        working-directory: /infra
+        working-directory: ${{ github.workspace }}/infra
         run: terraform apply -auto-approve
         env:
           TF_VAR_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
