@@ -47,7 +47,7 @@ Overall, this project demonstrates my proficiency in leveraging AWS services and
 ### Built With
 
 * [![React][React]][React-url]
-* [![[Python]][Python]][Python-url]
+* [![Python][Python.py]][Python-url]
 * [![S3][S3]][S3-url]
 * [![AWS CloudFront][AWS CloudFront]][AWS CloudFront-url]
 * [![Route53][Route53]][Route53-url]
@@ -87,7 +87,7 @@ Overall, this project demonstrates my proficiency in leveraging AWS services and
 
 [React]: https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB
 [React-url]: https://reactjs.org/
-[Python]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
+[Python.py]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
 [Python-url]: https://www.python.org/
 [S3]: https://img.shields.io/badge/S3-569A31?style=for-the-badge&logo=amazon-s3&logoColor=white
 [S3-url]: https://aws.amazon.com/s3/
