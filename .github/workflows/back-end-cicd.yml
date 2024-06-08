@@ -26,6 +26,7 @@ jobs:
       - name: Terraform plan
         run: |
           cd infra
+          ls
           terraform plan
 
       - name: Terraform apply
