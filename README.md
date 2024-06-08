@@ -87,8 +87,8 @@ Overall, this project demonstrates my proficiency in leveraging AWS services and
 
 [React]: https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB
 [React-url]: https://reactjs.org/
-[Python]: https://www.python.org/
-[Python-url]: https://img.shields.io/badge/python-%2314354C.svg?style=for-the-badge&logo=python&logoColor=white
+[Python]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
+[Python-url]: https://www.python.org/
 [S3]: https://img.shields.io/badge/S3-569A31?style=for-the-badge&logo=amazon-s3&logoColor=white
 [S3-url]: https://aws.amazon.com/s3/
 [AWS CloudFront]: https://img.shields.io/badge/AWS%20CloudFront-FF9900?style=for-the-badge&logo=amazon-cloudfront&logoColor=white
