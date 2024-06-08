@@ -1,36 +1,37 @@
 name: backend-Terraform
 
 on: push
+
 jobs:
   terraform_apply:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v1
 
+      - name: Verify Terraform version
+        run: terraform --version
 
-    - name: Verify Terraform version
-      run: terraform --version
+      - name: ls
+        run: ls
 
-    - name: ls
-      run: ls
+      - name: Terraform init
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          ls infra
+          cd infra
+          terraform init -input=false
 
-    - name: cd into infra
-      run: cd infra
+      - name: Terraform plan
+        run: |
+          cd infra
+          terraform plan
 
-    - name: ls
-      run: ls
-
-    - name: Terraform init
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: terraform  init -input=false
-
-    - name: Terraform plan
-      run: terraform plan
-
-    - name: Terraform apply
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: terraform apply -auto-approve -input=false 
+      - name: Terraform apply
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          cd infra
+          terraform apply -auto-approve -input=false
