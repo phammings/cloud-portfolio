@@ -11,17 +11,20 @@ jobs:
     - name: Verify Terraform version
       run: terraform --version
 
+    - name: cd into infra
+      run: cd ./infra
+
     - name: Terraform init
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: terraform -chdir="./infra" init -input=false
+      run: terraform  init -input=false
 
     - name: Terraform plan
-      run: terraform -chdir="./infra" plan
+      run: terraform plan
 
     - name: Terraform apply
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: terraform -chdir="./infra" apply -auto-approve -input=false 
+      run: terraform apply -auto-approve -input=false 
