@@ -1,34 +1,27 @@
-name: Terraform
+name: backend-Terraform
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-
+on: push
 jobs:
-  terraform:
+  terraform_apply:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v1
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.0.0
 
-      - name: Terraform init
-        working-directory: ${{ github.workspace }}/infra
-        run: terraform init
+    - name: Verify Terraform version
+      run: terraform --version
 
-      - name: Terraform plan
-        working-directory: ${{ github.workspace }}/infra
-        run: terraform plan
+    - name: Terraform init
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: terraform -chdir="./terraform" init -input=false
 
-      - name: Terraform apply
-        working-directory: ${{ github.workspace }}/infra
-        run: terraform apply -auto-approve
-        env:
-          TF_VAR_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          TF_VAR_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - name: Terraform plan
+      run: terraform plan
+
+    - name: Terraform apply
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: terraform -chdir="./terraform" apply -auto-approve -input=false 
