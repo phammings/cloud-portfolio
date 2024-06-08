@@ -1,10 +1,9 @@
-name: Terraform
+name: Terraform Workflow
 
 on:
-  workflow_dispatch:
   push:
     branches:
-    - main
+      - main
 
 jobs:
   terraform:
@@ -13,19 +12,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.0.0
 
       - name: Terraform init
+        working-directory: infra/
         run: terraform init
 
       - name: Terraform plan
+        working-directory: infra/
         run: terraform plan
-
-      - name: Terraform apply
-        run: terraform apply -auto-approve
-        env:
-          TF_VAR_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          TF_VAR_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
