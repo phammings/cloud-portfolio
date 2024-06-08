@@ -39,6 +39,7 @@ For the CI/CD process, I've implemented GitHub Actions workflows for both the fr
 
 Overall, this project demonstrates my proficiency in leveraging AWS services and implementing CI/CD pipelines using GitHub Actions for building modern web applications.
 
+## [Live Demo 🔗](https://d1o7hy938n9c4o.cloudfront.net/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -93,7 +94,7 @@ Overall, this project demonstrates my proficiency in leveraging AWS services and
 [S3-url]: https://aws.amazon.com/s3/
 [AWS CloudFront]: https://img.shields.io/badge/AWS%20CloudFront-FF9900?style=for-the-badge&logo=amazon-cloudfront&logoColor=white
 [AWS CloudFront-url]: https://aws.amazon.com/cloudfront/
-[Route53]: https://img.shields.io/badge/Route%2053-000000?style=for-the-badge&logo=Amazon%20AWS&logoColor=white
+[Route53]: https://img.shields.io/badge/Amazon%20Route%2053-8C4FFF?logo=amazonroute53&logoColor=fff&style=flat
 [Route53-url]: https://aws.amazon.com/route53/
 [Certificate Manager]: https://img.shields.io/badge/Certificate%20Manager-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white
 [Certificate Manager-url]: https://aws.amazon.com/certificate-manager/
