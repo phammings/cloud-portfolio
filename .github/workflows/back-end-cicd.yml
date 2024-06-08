@@ -17,6 +17,9 @@ jobs:
     - name: cd into infra
       run: cd ./infra
 
+    - name: ls
+      run: ls
+
     - name: Terraform init
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
