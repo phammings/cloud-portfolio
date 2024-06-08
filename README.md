@@ -98,7 +98,7 @@ Overall, this project demonstrates my proficiency in leveraging AWS services and
 [Route53-url]: https://aws.amazon.com/route53/
 [Certificate Manager]: https://img.shields.io/badge/Certificate%20Manager-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white
 [Certificate Manager-url]: https://aws.amazon.com/certificate-manager/
-[AWS Lambda]: https://img.shields.io/badge/AWS%20Lambda-F90?logo=awslambda&logoColor=fff&style=flat
+[AWS Lambda]: https://img.shields.io/badge/AWS%20Lambda-F90?logo=awslambda&logoColor=fff&style=for-the-badge
 [AWS Lambda-url]: https://aws.amazon.com/lambda/
 [DynamoDB]: https://img.shields.io/badge/DynamoDB-4053D6?style=for-the-badge&logo=amazon-dynamodb&logoColor=white
 [DynamoDB-url]: https://aws.amazon.com/dynamodb/
