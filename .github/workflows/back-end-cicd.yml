@@ -11,6 +11,9 @@ jobs:
     - name: Verify Terraform version
       run: terraform --version
 
+    - name: ls
+      run: ls
+
     - name: cd into infra
       run: cd ./infra
 
