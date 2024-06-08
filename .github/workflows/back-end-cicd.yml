@@ -15,7 +15,7 @@ jobs:
       run: ls
 
     - name: cd into infra
-      run: cd ./infra
+      run: cd infra
 
     - name: ls
       run: ls
