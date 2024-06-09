@@ -27,7 +27,7 @@ jobs:
           cd infra
           terraform import aws_iam_role.iam_for_lambda iam_for_lambda
           terraform import aws_lambda_function.myfunc myfunc
-          terraform import aws_iam_policy.iam_policy_for_resume_project aws_iam_policy_for_terraform_resume_project_policy
+          terraform import aws_iam_policy.iam_policy_for_resume_project arn:aws:iam::975049992188:policy/aws_iam_policy_for_terraform_resume_project_policy
           terraform state list
 
 
