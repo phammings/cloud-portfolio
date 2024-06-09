@@ -25,7 +25,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           cd infra
-          terraform import aws_iam_role.iam_for_lambda arn:aws:iam::975049992188:role/iam_for_lambda
+          terraform import aws_iam_role.iam_for_lambda iam_for_lambda
 
       - name: Terraform plan
         env:
