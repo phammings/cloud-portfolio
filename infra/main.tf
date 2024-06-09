@@ -89,6 +89,11 @@ data "archive_file" "zip_the_python_code" {
   output_path = "${path.module}/lambda/func.zip"
 }
 
+variable "lambda_function_url" {
+  type    = string
+  default = "https://jcr3uxp7dnyk5avxevlep2bjcu0hmswf.lambda-url.ca-central-1.on.aws/"
+}
+
 resource "aws_lambda_function_url" "url1" {
   function_name      = aws_lambda_function.myfunc.function_name
   authorization_type = "NONE"
