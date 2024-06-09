@@ -26,6 +26,9 @@ jobs:
         run: |
           cd infra
           terraform import aws_iam_role.iam_for_lambda iam_for_lambda
+          terraform import aws_lambda_function.myfunc myfunc_function_name
+          terraform import aws_iam_policy.iam_policy_for_resume_project iam_policy_arn
+
 
       - name: Terraform plan
         env:
