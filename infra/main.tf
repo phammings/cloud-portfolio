@@ -61,7 +61,7 @@ resource "aws_iam_policy" "iam_policy_for_resume_project" {
 resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
   role = aws_iam_role.iam_for_lambda.name
   policy_arn = aws_iam_policy.iam_policy_for_resume_project.arn
-  
+
 }
 
 data "archive_file" "zip_the_python_code" {
