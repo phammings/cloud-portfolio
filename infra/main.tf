@@ -95,3 +95,20 @@ resource "aws_lambda_function_url" "url1" {
     max_age           = 86400
   }
 }
+
+# Debug Outputs
+output "iam_role_arn" {
+  value = aws_iam_role.iam_for_lambda[0].arn
+}
+
+output "iam_policy_arn" {
+  value = aws_iam_policy.iam_policy_for_resume_project[0].arn
+}
+
+data "local_file" "lambda_zip" {
+  filename = "${path.module}/lambda/func.zip"
+}
+
+output "lambda_zip_content" {
+  value = data.local_file.lambda_zip.content
+}
