@@ -8,7 +8,7 @@
 
   <p align="center">
     This is my attempt at cloud resume challenge in AWS.
-    What is Cloud Resume Challenge? - [The Cloud Resume Challenge](https://cloudresumechallenge.dev/) is a multiple-step resume project which helps build and demonstrate skills fundamental to pursuing a career in Cloud. The project was published by Forrest Brazeal and the webiste was built using React.
+    <a href= "https://cloudresumechallenge.dev/">What is Cloud Resume Challenge? </a> is a multiple-step resume project which helps build and demonstrate skills fundamental to pursuing a career in Cloud. The project was published by Forrest Brazeal and the webiste was built using React.
   </p>
 </div>
 
