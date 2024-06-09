@@ -1,4 +1,4 @@
-name: Upload Website
+name: frontend-WebsiteUpload
 
 on:
   workflow_dispatch:
