@@ -89,7 +89,7 @@ data "archive_file" "zip_the_python_code" {
   output_path = "${path.module}/lambda/func.zip"
 }
 
-/*
+/* ONLY ON FIRST APPLY
 resource "aws_lambda_function_url" "url1" {
   function_name      = aws_lambda_function.myfunc.function_name
   authorization_type = "NONE"
