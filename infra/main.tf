@@ -5,6 +5,16 @@ resource "aws_lambda_function" "myfunc" {
   role             = aws_iam_role.iam_for_lambda.arn
   handler          = "func.lambda_handler"
   runtime          = "python3.8"
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to these attributes during updates
+      # This prevents Terraform from attempting to update the existing resource
+      source_code_hash,
+      role,
+    ]
+    create_before_destroy = true
+  }
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
@@ -56,6 +66,15 @@ resource "aws_iam_policy" "iam_policy_for_resume_project" {
         },
       ]
   })
+
+    lifecycle {
+    ignore_changes = [
+      # Ignore changes to these attributes during updates
+      # This prevents Terraform from attempting to update the existing resource
+      policy,
+    ]
+    create_before_destroy = true
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
