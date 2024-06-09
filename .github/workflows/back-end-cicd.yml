@@ -19,6 +19,14 @@ jobs:
           cd infra
           terraform init -input=false
 
+      - name: Terraform import IAM role
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          cd infra
+          terraform import aws_iam_role.iam_for_lambda arn:aws:iam::975049992188:role/iam_for_lambda
+
       - name: Terraform plan
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
