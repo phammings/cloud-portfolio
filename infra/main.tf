@@ -63,8 +63,8 @@ resource "aws_iam_policy" "iam_policy_for_resume_project" {
 resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
   count = length(data.aws_iam_role.existing_iam_for_lambda.arn) == 0 && length(data.aws_iam_policy.existing_iam_policy_for_resume_project.arn) == 0 ? 1 : 0
 
-  role      = aws_iam_role.iam_for_lambda[count.index].name
-  policy_arn = aws_iam_policy.iam_policy_for_resume_project[count.index].arn
+  role      = coalesce(data.aws_iam_role.existing_iam_for_lambda.name, aws_iam_role.iam_for_lambda[0].name)
+  policy_arn = coalesce(data.aws_iam_policy.existing_iam_policy_for_resume_project.arn, aws_iam_policy.iam_policy_for_resume_project[0].arn)
 }
 
 data "archive_file" "zip_the_python_code" {
@@ -77,7 +77,7 @@ resource "aws_lambda_function" "myfunc" {
   filename         = data.archive_file.zip_the_python_code.output_path
   source_code_hash = data.archive_file.zip_the_python_code.output_base64sha256
   function_name    = "myfunc"
-  role             = length(data.aws_iam_role.existing_iam_for_lambda.arn) > 0 ? data.aws_iam_role.existing_iam_for_lambda.arn : aws_iam_role.iam_for_lambda[0].arn
+  role             = coalesce(data.aws_iam_role.existing_iam_for_lambda.arn, aws_iam_role.iam_for_lambda[0].arn)
   handler          = "func.lambda_handler"
   runtime          = "python3.8"
 }
@@ -98,11 +98,11 @@ resource "aws_lambda_function_url" "url1" {
 
 # Debug Outputs
 output "iam_role_arn" {
-  value = aws_iam_role.iam_for_lambda[0].arn
+  value = coalesce(data.aws_iam_role.existing_iam_for_lambda.arn, aws_iam_role.iam_for_lambda[0].arn)
 }
 
 output "iam_policy_arn" {
-  value = aws_iam_policy.iam_policy_for_resume_project[0].arn
+  value = coalesce(data.aws_iam_policy.existing_iam_policy_for_resume_project.arn, aws_iam_policy.iam_policy_for_resume_project[0].arn)
 }
 
 data "local_file" "lambda_zip" {
