@@ -1,14 +1,23 @@
+data "aws_iam_role" "existing_iam_for_lambda" {
+  name = "iam_for_lambda"
+}
+
+data "aws_iam_policy" "existing_iam_policy_for_resume_project" {
+  name = "aws_iam_policy_for_terraform_resume_project_policy"
+}
+
 resource "aws_lambda_function" "myfunc" {
   filename         = data.archive_file.zip_the_python_code.output_path
   source_code_hash = data.archive_file.zip_the_python_code.output_base64sha256
   function_name    = "myfunc"
-  role             = aws_iam_role.iam_for_lambda.arn
+  role             = coalesce(data.aws_iam_role.existing_iam_for_lambda.arn, aws_iam_role.iam_for_lambda.arn)
   handler          = "func.lambda_handler"
   runtime          = "python3.8"
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
+  count = length(data.aws_iam_role.existing_iam_for_lambda) == 0 ? 1 : 0
+  name  = "iam_for_lambda"
 
   assume_role_policy = <<EOF
 {
@@ -28,11 +37,12 @@ EOF
 }
 
 resource "aws_iam_policy" "iam_policy_for_resume_project" {
+  count = length(data.aws_iam_policy.existing_iam_policy_for_resume_project) == 0 ? 1 : 0
 
   name        = "aws_iam_policy_for_terraform_resume_project_policy"
   path        = "/"
   description = "AWS IAM Policy for managing the resume project role"
-    policy = jsonencode(
+  policy = jsonencode(
     {
       "Version" : "2012-10-17",
       "Statement" : [
@@ -49,19 +59,19 @@ resource "aws_iam_policy" "iam_policy_for_resume_project" {
           "Effect" : "Allow",
           "Action" : [
             "dynamodb:UpdateItem",
-			      "dynamodb:GetItem",
+            "dynamodb:GetItem",
             "dynamodb:PutItem"
           ],
           "Resource" : "arn:aws:dynamodb:*:*:table/cloudresume-test"
-        },
+        }
       ]
-  })
+    }
+  )
 }
 
 resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
-  role = aws_iam_role.iam_for_lambda.name
+  role      = aws_iam_role.iam_for_lambda.name
   policy_arn = aws_iam_policy.iam_policy_for_resume_project.arn
-
 }
 
 data "archive_file" "zip_the_python_code" {
