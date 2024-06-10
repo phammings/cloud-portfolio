@@ -70,10 +70,10 @@ Overall, this project demonstrates my proficiency in leveraging AWS services and
 - ✔️ Store and update the visitor count in Amazon DynamoDB
 - ✔️ Create an API with AWS API Gateway and Lambda for DynamoDB interaction
 - ✔️ Define API resources in an AWS SAM template for easy deployment
-- ✔️ Write Python code for the Lambda function using boto3
+- ✔️ Write Python code for the Lambda function using boto3 and pytest
 - ✔️ Set up GitHub Actions for SAM application deployment
-- ✔️ Set up Github actions to update the S3 bucket automatically for frontend changes
-- ✔️ Set up Github actions to update the backend automatically for backend changes
+- ✔️ Set up Github Actions to update the S3 bucket automatically for frontend changes
+- ✔️ Set up Github Actions to update the backend automatically for backend changes
 - ✔️ Use Terraform for managing AWS resources and infrastructure as code
 
 
