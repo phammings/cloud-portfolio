@@ -20,8 +20,8 @@ jobs:
           pip install pytest
 
       - name: Run unit tests
-      env:
-          AWS_DEFAULT_REGION: 'ca-central-1'
+        env:
+            AWS_DEFAULT_REGION: 'ca-central-1'
         run: |
           cd infra
           cd lambda
