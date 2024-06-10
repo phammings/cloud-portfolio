@@ -21,8 +21,9 @@ jobs:
 
       - name: Run unit tests
         run: |
+          cd infra
           cd lambda
-          pytest
+          pytest test_func.py
 
       - name: Verify Terraform version
         run: terraform --version
