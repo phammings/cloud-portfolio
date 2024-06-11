@@ -67,7 +67,7 @@ const Hero = ({ name, views }) => {
             }}
             onInit={(typewriter) => {
               typewriter
-                .changeDelay(40)
+                .changeDelay(30)
                 .typeString(
                   `Software Engineer Intern<br><br>
                    <p style="font-size: 12pt;">
