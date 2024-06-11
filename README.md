@@ -81,6 +81,7 @@ Overall, this project demonstrates my proficiency in leveraging AWS services and
 
 
 <!-- DIAGRAM -->
+## Architecture
 ![Architecture Diagram](/img/AWS-Architecture-Cloud-resume-challenge.png)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
