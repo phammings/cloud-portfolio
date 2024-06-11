@@ -63,7 +63,7 @@ Overall, this project demonstrates my proficiency in leveraging AWS services and
 <!-- ROADMAP -->
 ## Roadmap
 
-- ✔️ Create a static React website for your resume
+- ✔️ Create a static React website for your portfolio
 - ✔️ Ensure the S3 website URL uses HTTPS with Amazon CloudFront
 - ✔️ Point a custom DNS domain name to the CloudFront distribution using Amazon Route 53
 - ✔️ Implement a visitor counter on the webpage with useEffect
