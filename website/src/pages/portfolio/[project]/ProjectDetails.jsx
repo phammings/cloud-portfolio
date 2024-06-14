@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import PageHeader from "../../../components/PageHeader";
@@ -14,7 +14,6 @@ import Footer from "../../../components/Footer";
  *
  * @component
  */
-
 const ProjectDetails = () => {
   // Get the current location using React Router's useLocation hook
   const location = useLocation();
@@ -35,19 +34,73 @@ const ProjectDetails = () => {
     return <PageNotFound />;
   }
 
+  // Inline styles
+  const projectDetailsStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '20px',
+  };
+
+  const rowStyle = {
+    display: 'flex',
+    flexWrap: 'wrap',
+  };
+
+  const colStyle = {
+    flex: '0 0 100%',
+    padding: '10px',
+  };
+
+  const projectImageStyle = {
+    ...colStyle,
+    order: 1,
+  };
+
+  const projectBodyContainerStyle = {
+    ...colStyle,
+    order: 2,
+  };
+
+  const techStyle = {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '10px',
+  };
+
+  const paragraphStyle = {
+    marginBottom: '10px',
+    marginTop: '15px',
+  };
+
+  const buttonContainerStyle = {
+    display: 'flex',
+    gap: '10px',
+  };
+
+  // Media query styles
+  const mediaQuery = window.matchMedia("(min-width: 1200px)");
+
+  if (mediaQuery.matches) {
+    projectDetailsStyle.flexDirection = 'row';
+    projectImageStyle.flex = '0 0 33.3333%';
+    projectBodyContainerStyle.flex = '0 0 66.6667%';
+    projectImageStyle.order = 1;
+    projectBodyContainerStyle.order = 2;
+  }
+
   return (
     <>
       <main className="container portfolio">
         {/* Display the page header with project title and description */}
         <PageHeader title={project.title} description={project.description} />
-        <div className="projectDetails">
-          <div className="row">
-            <div className="col-12 col-xl-4 projectImage">
+        <div style={projectDetailsStyle}>
+          <div style={rowStyle}>
+            <div style={projectImageStyle}>
               {/* Display the project image */}
               <Image src={project.image2} alt={project.name} opacity="0.5" />
             </div>
-            <div className="col-12 col-xl-8 projectBodyContainer">
-              <div className="tech">
+            <div style={projectBodyContainerStyle}>
+              <div style={techStyle}>
                 {/* Display project technologies with animation */}
                 {project.technologies.map((technology, i) => (
                   <motion.span
@@ -66,8 +119,8 @@ const ProjectDetails = () => {
                 {/* Display project body paragraphs with animation */}
                 {project.body.split("\n").map((paragraph, i) => (
                   <motion.p
-                    className="paragraph"
                     key={i}
+                    style={paragraphStyle}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: i * 0.3, ease: "easeInOut" }}
@@ -79,7 +132,7 @@ const ProjectDetails = () => {
 
               {/* Display buttons with animation */}
               <motion.div
-                style={{ display: "flex", gap: "10px" }}
+                style={buttonContainerStyle}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: project.body.split("\n").length * 0.3 }}
