@@ -14,6 +14,20 @@
     "id": "1"
   },
   {
+    "title": "Spotify Clone",
+    "stack": "React · Next.js · Supabase · Stripe",
+    "description": "Full stack Spotify clone built with React, Next.js, Supabse (Postgresql), Typescript and Stripe",
+    "image": "https://phammings.github.io/cloud-portfolio/projectImages/spotify-laptop.png",
+    "image2": "https://phammings.github.io/cloud-portfolio/projectImages/spotify-snapshot.png",
+    "image3": "https://phammings.github.io/cloud-portfolio/projectImages/spotify-snapshot.png",
+    "technologies": ["React", "Next.js", "Supabase", "Typescript", "Stripe", "Vercel"],
+    "body": "The project focuses on creating a full stack music streaming application that replicates the core features of Spotify. The frontend is built with Next.js and React, providing a dynamic and responsive user interface. Tailwind CSS is used for styling to achieve a modern and sleek design.\nThe backend is powered by Supabase, an open-source Firebase alternative built on top of PostgreSQL. Supabase handles user authentication, song uploading, and database management. Stripe is integrated for payment processing, allowing users to subscribe to premium features.\nThis project aims to provide a comprehensive example of building a production-ready music streaming application, covering key aspects such as authentication, data management, and payment processing.",
+    "github": "https://github.com/phammings/spotify-clone",
+    "deployed": "spotify.ryanlepham.com",
+    "bgcolor": "#1DB954",
+    "id": "2"
+  },
+  {
     "title": "Clothing Store",
     "stack": "Java · React · Postgresql · Docker",
     "description": "Full stack ecommerce app built with React, Java Springboot and Postgresql",
@@ -25,7 +39,7 @@
     "github": "https://github.com/phammings/clothing-store",
     "deployed": "https://github.com/phammings/clothing-store",
     "bgcolor": "var(--hl2-color)",
-    "id": "2"
+    "id": "3"
   },
   {
     "title": "Music Microservice API",
@@ -39,7 +53,7 @@
     "github": "https://github.com/phammings/Music-Microservice-API",
     "deployed": "https://github.com/phammings/Music-Microservice-API",
     "bgcolor": "#6c4bf4",
-    "id": "3"
+    "id": "4"
   },
   {
     "title": "S&P 500 Gamma Exposure Calculator",
@@ -53,7 +67,7 @@
     "github": "https://github.com/phammings/SPX500-Gamma-Exposure-Calculator",
     "deployed": "https://github.com/phammings/SPX500-Gamma-Exposure-Calculator",
     "bgcolor": "#BFBF00",
-    "id": "4"
+    "id": "5"
   },
   {
     "title": "Todo List",
@@ -67,7 +81,7 @@
     "github": "https://github.com/phammings/todo-list",
     "deployed": "https://phammings.github.io/todo-list/",
     "bgcolor": "var(--hl-color)",
-    "id": "5"
+    "id": "6"
   },
   {
     "title": "Number Memorization Game",
@@ -81,7 +95,7 @@
     "github": "https://github.com/phammings/Number-Memoriation-Game",
     "deployed": "https://github.com/phammings/Number-Memoriation-Game",
     "bgcolor": "#f85781",
-    "id": "6"
+    "id": "7"
   },
   {
     "title": "Tic Tac Toe",
@@ -95,6 +109,6 @@
     "github": "https://github.com/phammings/tic-tac-toe",
     "deployed": "https://phammings.github.io/tic-tac-toe/",
     "bgcolor": "#e47911",
-    "id": "7"
+    "id": "8"
   }
 ]
