@@ -23,7 +23,7 @@
     "technologies": ["React", "Next.js", "Supabase", "Typescript", "Stripe", "Vercel"],
     "body": "The project focuses on creating a full stack music streaming application that replicates the core features of Spotify. The frontend is built with Next.js and React, providing a dynamic and responsive user interface. Tailwind CSS is used for styling to achieve a modern and sleek design.\nThe backend is powered by Supabase, an open-source Firebase alternative built on top of PostgreSQL. Supabase handles user authentication, song uploading, and database management. Stripe is integrated for payment processing, allowing users to subscribe to premium features.\nThis project aims to provide a comprehensive example of building a production-ready music streaming application, covering key aspects such as authentication, data management, and payment processing.",
     "github": "https://github.com/phammings/spotify-clone",
-    "deployed": "spotify.ryanlepham.com",
+    "deployed": "https://spotify.ryanlepham.com/",
     "bgcolor": "#1DB954",
     "id": "2"
   },

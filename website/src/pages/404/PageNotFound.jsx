@@ -23,7 +23,7 @@ const PageNotFound = () => {
             <p>Please double-check the URL or navigate to another section of the site.</p>
 
             {/* Provide a link back to the home page */}
-            <Link to="" className="home">
+            <Link to="/" className="home">
               <Button name="Return to Home" />
             </Link>
           </div>
