@@ -9,7 +9,7 @@
     "technologies": ["React", "Python", "S3", "CloudFront", "Route53", "Certificate Manager", "Lambda", "DynamoDB", "Terraform", "CI/CD"],
     "body": "This project is my submission for the Cloud Resume Challenge, showcasing my skills in AWS services and GitHub Actions. I've created a static React resume website using AWS services such as S3 for storage, AWS CloudFront for content delivery, Certificate Manager for SSL/TLS certificates, AWS Lambda for serverless functions, and DynamoDB for database management. \nFor the CI/CD process, I've implemented GitHub Actions workflows for both the frontend and backend. The workflows use Terraform to manage infrastructure as code, enabling automated deployment and scaling of the application. Overall, this project demonstrates my proficiency in leveraging AWS services and implementing CI/CD pipelines using GitHub Actions for building modern web applications.",
     "github": "https://github.com/phammings/cloud-portfolio",
-    "deployed": "https://d1o7hy938n9c4o.cloudfront.net/",
+    "deployed": "https://ryanlepham.com/",
     "bgcolor": "#89CFF0",
     "id": "1"
   },
