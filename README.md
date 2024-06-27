@@ -39,7 +39,7 @@ For the CI/CD process, I've implemented GitHub Actions workflows for both the fr
 
 Overall, this project demonstrates my proficiency in leveraging AWS services and implementing CI/CD pipelines using GitHub Actions for building modern web applications.
 
-## [Live Demo 🔗](https://d1o7hy938n9c4o.cloudfront.net/)
+## [Live Demo 🔗](https://www.ryanlepham.com/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
