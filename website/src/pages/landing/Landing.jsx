@@ -25,6 +25,14 @@ const Landing = ({ name }) => {
     }
 
     fetchViews();
+
+    // Disable scrolling
+    document.body.style.overflow = 'hidden';
+
+    // Cleanup to re-enable scrolling when component unmounts
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
   }, []);
 
   // Inline styles for the main landing container
@@ -34,7 +42,6 @@ const Landing = ({ name }) => {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      overflow: "hidden",
     },
   };
 
