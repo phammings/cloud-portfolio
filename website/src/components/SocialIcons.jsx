@@ -43,7 +43,7 @@ const SocialIcons = () => {
           title="Ryan Pham's LinkedIn Profile"
         ></motion.i>
       </a>
-      <a className="icon" style={styles.icon} href="https://github.com/phammings/portfolio/blob/main/Ryan_Pham_resume.pdf" target="_blank">
+      <a className="icon" style={styles.icon} href="https://github.com/phammings/cloud-portfolio/blob/resume/Ryan_Pham_resume.pdf" target="_blank">
         {/* Resume Icon */}
         <motion.i
           initial={{ y1: 100, opacity: 0 }}
