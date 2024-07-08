@@ -14,6 +14,20 @@
     "id": "1"
   },
   {
+    "title": "Airbnb Clone",
+    "stack": "Java · Angular · PostgreSQL · Docker",
+    "description": "Full stack Airbnb Clone built with Angular, Java Springboot and PostgreSQL",
+    "image": "https://phammings.github.io/cloud-portfolio/projectImages/airbnb-laptop.png",
+    "image2": "https://phammings.github.io/cloud-portfolio/projectImages/airbnb-snapshot.png",
+    "image3": "https://phammings.github.io/cloud-portfolio/projectImages/airbnb-snapshot.png",
+    "technologies": ["Java Springboot", "Angular", "PostgreSQL", "Docker", "Auth0"],
+    "body": "The project focuses on creating a full stack Airbnb clone application. The backend is built with Spring Boot Java, interfacing with a PostgreSQL database. The frontend is developed with Angular, providing a dynamic and responsive user interface. \nThe application includes full user authentication and authorization with Auth0, supporting role management. It features booking management for travelers, reservation management for landlords, and search functionalities by various criteria like location, date, and number of guests.",
+    "github": "https://github.com/phammings/Airbnb-Clone",
+    "deployed": "https://github.com/phammings/Airbnb-Clone",
+    "bgcolor": "#FF5A5F",
+    "id": "3"
+  },
+  {
     "title": "AWS Cloud Portfolio",
     "stack": "React · Python · AWS · Terraform",
     "description": "A project showcasing my skills in AWS services and GitHub CI/CD pipelining.",
@@ -25,12 +39,12 @@
     "github": "https://github.com/phammings/cloud-portfolio",
     "deployed": "https://ryanlepham.com/",
     "bgcolor": "#89CFF0",
-    "id": "2"
+    "id": "3"
   },
   {
     "title": "Spotify Clone",
     "stack": "React · Next.js · PostgreSQL · Stripe",
-    "description": "Full stack Spotify clone built with React, Next.js, Supabse (Postgresql), Typescript and Stripe",
+    "description": "Full stack Spotify clone built with React, Next.js, Supabse (PostgreSQL), Typescript and Stripe",
     "image": "https://phammings.github.io/cloud-portfolio/projectImages/spotify-laptop.png",
     "image2": "https://phammings.github.io/cloud-portfolio/projectImages/spotify-snapshot.png",
     "image3": "https://phammings.github.io/cloud-portfolio/projectImages/spotify-snapshot.png",
@@ -39,21 +53,21 @@
     "github": "https://github.com/phammings/spotify-clone",
     "deployed": "https://spotify.ryanlepham.com/",
     "bgcolor": "#1DB954",
-    "id": "3"
+    "id": "4"
   },
   {
     "title": "Clothing Store",
-    "stack": "Java · React · Postgresql · Docker",
-    "description": "Full stack ecommerce app built with React, Java Springboot and Postgresql",
+    "stack": "Java · React · PostgreSQL · Docker",
+    "description": "Full stack ecommerce app built with React, Java Springboot and PostgreSQL",
     "image": "https://phammings.github.io/cloud-portfolio/projectImages/clothing-laptop.png",
     "image2": "https://phammings.github.io/cloud-portfolio/projectImages/clothing-snapshot.png",
     "image3": "https://phammings.github.io/cloud-portfolio/projectImages/clothing-snapshot.png",
-    "technologies": ["Java Springboot", "React", "Postgresql", "GraphQL", "Docker"],
+    "technologies": ["Java Springboot", "React", "PostgreSQL", "GraphQL", "Docker"],
     "body": "The project is a full-stack e-commerce application for a clothing store, developed using React for the frontend, Spring Boot for the backend, and PostgreSQL for the database. The application includes user authentication and registration features, allowing users to create accounts and login securely. \nAdmin functionalities are implemented to manage users, orders, and items within the store. The project aims to explore full-stack technologies, implement background logic for REST API endpoints, and extend functionality through user and admin features. Git is used for version control, and code style conventions are followed. Testing is conducted using tools like Curl or Postman to ensure the application functions as expected. The application emphasizes database and node-based relationships between different components, mirroring industry practices for creating large-scale products.",
     "github": "https://github.com/phammings/clothing-store",
     "deployed": "https://github.com/phammings/clothing-store",
     "bgcolor": "var(--hl2-color)",
-    "id": "4"
+    "id": "5"
   },
   {
     "title": "Music Microservice API",
@@ -67,7 +81,7 @@
     "github": "https://github.com/phammings/Music-Microservice-API",
     "deployed": "https://github.com/phammings/Music-Microservice-API",
     "bgcolor": "#6c4bf4",
-    "id": "5"
+    "id": "6"
   },
   {
     "title": "S&P 500 Gamma Exposure Calculator",
@@ -81,7 +95,7 @@
     "github": "https://github.com/phammings/SPX500-Gamma-Exposure-Calculator",
     "deployed": "https://github.com/phammings/SPX500-Gamma-Exposure-Calculator",
     "bgcolor": "#BFBF00",
-    "id": "6"
+    "id": "7"
   },
   {
     "title": "Todo List",
@@ -95,7 +109,7 @@
     "github": "https://github.com/phammings/todo-list",
     "deployed": "https://phammings.github.io/todo-list/",
     "bgcolor": "var(--hl-color)",
-    "id": "7"
+    "id": "8"
   },
   {
     "title": "Number Memorization Game",
@@ -109,7 +123,7 @@
     "github": "https://github.com/phammings/Number-Memoriation-Game",
     "deployed": "https://github.com/phammings/Number-Memoriation-Game",
     "bgcolor": "#f85781",
-    "id": "8"
+    "id": "9"
   },
   {
     "title": "Tic Tac Toe",
@@ -123,6 +137,6 @@
     "github": "https://github.com/phammings/tic-tac-toe",
     "deployed": "https://phammings.github.io/tic-tac-toe/",
     "bgcolor": "#e47911",
-    "id": "9"
+    "id": "10"
   }
 ]
