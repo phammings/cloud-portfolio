@@ -78,10 +78,10 @@ function App() {
 
   return (
     <>
-      {showLoader ? (
+      {/* {showLoader ? (
         // Show loader until initial route is loaded
         <Loader setShowLoader={setShowLoader} />
-      ) : (
+      ) : ( */}
         <>
           {/* Header */}
           <Header />
@@ -107,7 +107,7 @@ function App() {
             <Route path="*" element={<Navigate to="/page-not-found" />} />
           </Routes>
         </>
-      )}
+      {/* )} */}
     </>
   );
 }
