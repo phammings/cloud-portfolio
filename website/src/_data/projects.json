@@ -20,7 +20,7 @@
     "image": "https://phammings.github.io/cloud-portfolio/projectImages/airbnb-laptop.png",
     "image2": "https://phammings.github.io/cloud-portfolio/projectImages/airbnb-snapshot.png",
     "image3": "https://phammings.github.io/cloud-portfolio/projectImages/airbnb-snapshot.png",
-    "technologies": ["Java Springboot", "Angular", "PostgreSQL", "Docker", "Auth0"],
+    "technologies": ["Java Springboot", "Angular", "PostgreSQL", "Docker", "Auth0", "AWS EC2", "Coolify"],
     "body": "The project focuses on creating a full stack Airbnb clone application. The backend is built with Spring Boot Java, interfacing with a PostgreSQL database. The frontend is developed with Angular, providing a dynamic and responsive user interface. \nThe application includes full user authentication and authorization with Auth0, supporting role management. It features booking management for travelers, reservation management for landlords, and search functionalities by various criteria like location, date, and number of guests.\nThe project is deployed on an AWS EC2 instance self-hosted through Coolify. For the CI/CD process, I implemented Github actions to automatically create frontend and backend docker image is pushed to my docker hub and redeployed through Coolify.",
     "github": "https://github.com/phammings/Airbnb-Clone",
     "deployed": "https://airbnb.ryanlepham.com",
