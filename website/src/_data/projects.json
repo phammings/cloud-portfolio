@@ -42,6 +42,20 @@
     "id": "3"
   },
   {
+    "title": "Sales Management Data Analysis Project",
+    "stack": "SQL · Excel · Power BI",
+    "description": "Comprehensive sales management dashboard built with SQL for data cleansing, Excel for budget data, and Power BI/Tableau for visualization.",
+    "image": "https://phammings.github.io/cloud-portfolio/projectImages/data-laptop.png",
+    "image2": "https://phammings.github.io/cloud-portfolio/projectImages/data-snapshot.png",
+    "image3": "https://phammings.github.io/cloud-portfolio/projectImages/data-snapshot.png",
+    "technologies": ["SQL", "Excel", "Power BI"],
+    "body": "The project focuses on developing a sales management dashboard aimed at improving sales tracking and analysis for managers. The data cleansing and transformation were performed using SQL, ensuring consistency across multiple data sources. The budget data was integrated from Excel for seamless analysis.\nThe dashboard was created in Power BI, providing key performance indicators, sales trends, and detailed insights into customers and products. Tableau was used for advanced data visualizations to support decision-making.\nThis project aims to provide a complete solution for sales teams to monitor performance and make informed decisions based on real-time data.",
+    "github": "https://github.com/phammings/Sales-Management-Analysis",
+    "deployed": "https://github.com/phammings/Sales-Management-Analysis/blob/main/README.md",
+    "bgcolor": "#F2C811",
+    "id": "4"
+  },  
+  {
     "title": "Spotify Clone",
     "stack": "React · Next.js · PostgreSQL · Stripe",
     "description": "Full stack Spotify clone built with React, Next.js, Supabse (PostgreSQL), Typescript and Stripe",
@@ -53,7 +67,7 @@
     "github": "https://github.com/phammings/spotify-clone",
     "deployed": "https://spotify.ryanlepham.com/",
     "bgcolor": "#1DB954",
-    "id": "4"
+    "id": "6"
   },
   {
     "title": "Clothing Store",
@@ -67,7 +81,7 @@
     "github": "https://github.com/phammings/clothing-store",
     "deployed": "https://github.com/phammings/clothing-store",
     "bgcolor": "var(--hl2-color)",
-    "id": "5"
+    "id": "7"
   },
   {
     "title": "Music Microservice API",
@@ -81,7 +95,7 @@
     "github": "https://github.com/phammings/Music-Microservice-API",
     "deployed": "https://github.com/phammings/Music-Microservice-API",
     "bgcolor": "#6c4bf4",
-    "id": "6"
+    "id": "8"
   },
   {
     "title": "S&P 500 Gamma Exposure Calculator",
@@ -95,7 +109,7 @@
     "github": "https://github.com/phammings/SPX500-Gamma-Exposure-Calculator",
     "deployed": "https://github.com/phammings/SPX500-Gamma-Exposure-Calculator",
     "bgcolor": "#BFBF00",
-    "id": "7"
+    "id": "4"
   },
   {
     "title": "Todo List",
