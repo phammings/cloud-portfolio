@@ -56,6 +56,20 @@
     "id": "4"
   },  
   {
+    "title": "S&P 500 Gamma Exposure Calculator",
+    "stack": "Python · Selenium · Shell Script · Tableau",
+    "description": "Calculate the Absolute Gamma Exposure and Gamma Profile of the current S&P 500 market index",
+    "image": "https://phammings.github.io/cloud-portfolio/projectImages/gamma-laptop.png",
+    "image2": "https://phammings.github.io/cloud-portfolio/projectImages/gamma-snapshot.png",
+    "image3": "https://phammings.github.io/cloud-portfolio/projectImages/gamma-snapshot.png",
+    "body": "The project obtains options data from CBOE on the S&P 500 index to generate the absolute gamma exposure (by dollars and by calls/puts) and the gamma profile of the current market.\nGamma exposure refers to the impact of options trading, particularly in equity markets, and plays a crucial role in influencing market dynamics. This exposure is significant, especially in the case of S&P 500 options, which constitute a substantial portion (16%) of the S&P 500 market cap.\nThe charts were uploaded and visualized in Tableau.",
+    "technologies": ["Python", "Selenium", "Matplotlab", "Pysci", "Shell Script", "Tableau"],
+    "github": "https://github.com/phammings/SPX500-Gamma-Exposure-Calculator",
+    "deployed": "https://public.tableau.com/app/profile/ryan.pham2698/viz/SPXGammaProfileandExposureOverview/Dashboard2",
+    "bgcolor": "#BFBF00",
+    "id": "5"
+  },
+  {
     "title": "Spotify Clone",
     "stack": "React · Next.js · PostgreSQL · Stripe",
     "description": "Full stack Spotify clone built with React, Next.js, Supabse (PostgreSQL), Typescript and Stripe",
@@ -96,20 +110,6 @@
     "deployed": "https://github.com/phammings/Music-Microservice-API",
     "bgcolor": "#6c4bf4",
     "id": "8"
-  },
-  {
-    "title": "S&P 500 Gamma Exposure Calculator",
-    "stack": "Python · Selenium · Shell Script",
-    "description": "Calculate the Absolute Gamma Exposure and Gamma Profile of the current S&P 500 market index",
-    "image": "https://phammings.github.io/cloud-portfolio/projectImages/gamma-laptop.png",
-    "image2": "https://phammings.github.io/cloud-portfolio/projectImages/gamma-snapshot.png",
-    "image3": "https://phammings.github.io/cloud-portfolio/projectImages/gamma-snapshot.png",
-    "body": "The project obtains options data from CBOE on the S&P 500 index to generate the absolute gamma exposure (by dollars and by calls/puts) and the gamma profile of the current market.\nGamma exposure refers to the impact of options trading, particularly in equity markets, and plays a crucial role in influencing market dynamics. This exposure is significant, especially in the case of S&P 500 options, which constitute a substantial portion (16%) of the S&P 500 market cap.",
-    "technologies": ["Python", "Selenium", "Matplotlab", "Pysci", "Shell Script"],
-    "github": "https://github.com/phammings/SPX500-Gamma-Exposure-Calculator",
-    "deployed": "https://github.com/phammings/SPX500-Gamma-Exposure-Calculator",
-    "bgcolor": "#BFBF00",
-    "id": "4"
   },
   {
     "title": "Todo List",
