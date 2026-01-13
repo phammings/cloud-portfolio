@@ -27,6 +27,11 @@ jobs:
           cd lambda
           pytest test_func.py
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.4 
+
       - name: Verify Terraform version
         run: terraform --version
 
