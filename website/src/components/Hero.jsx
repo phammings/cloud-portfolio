@@ -69,7 +69,7 @@ const Hero = ({ name, views }) => {
               typewriter
                 .changeDelay(30)
                 .typeString(
-                  `Software Engineer Intern<br><br>
+                  `Software Engineer<br><br>
                    <p style="font-size: 12pt;">
                      Page Visits: <span class='counter-number'>${views}</span>
                    </p>`
