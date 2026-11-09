@@ -25,10 +25,7 @@ jobs:
       - name: Run unit tests
         env:
             AWS_DEFAULT_REGION: 'ca-central-1'
-        run: |
-          cd infra
-          cd lambda
-          pytest test_func.py
+        run: pytest backend
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
@@ -43,27 +40,15 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          cd infra
+          cd backend
           terraform init -input=false
-
-      - name: Terraform import IAM role
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          cd infra
-          terraform import aws_iam_role.iam_for_lambda iam_for_lambda
-          terraform import aws_lambda_function.myfunc myfunc
-          terraform import aws_iam_policy.iam_policy_for_resume_project arn:aws:iam::975049992188:policy/aws_iam_policy_for_terraform_resume_project_policy
-          terraform state list
-
 
       - name: Terraform plan
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          cd infra
+          cd backend
           terraform plan
 
       - name: Terraform apply
@@ -71,5 +56,5 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          cd infra
+          cd backend
           terraform apply -auto-approve -input=false
