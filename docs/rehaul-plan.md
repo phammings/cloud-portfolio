@@ -3,7 +3,9 @@
 ## Progress
 - [x] Stage 0: plan doc
 - [x] Stage 1: infra foundation (API: `https://fb769umpf4.execute-api.ca-central-1.amazonaws.com`)
-- [ ] Stage 2: auth, write API, seed
+- [x] Stage 2: auth, write API, seed
+  - Cognito pool `ca-central-1_puctf6Zuu`, client `3csaagvn6ld18gnjlbt1eeaq1f`, login `https://ryanlepham-portfolio.auth.ca-central-1.amazoncognito.com`
+  - Seeded: profile, 11 projects (ids are title slugs), resume + 23 files under `media/`. The frontend sync now excludes `media/*`.
 - [ ] Stage 3: public site (`frontend/`)
 - [ ] Stage 4: admin
 - [ ] Stage 5: cutover and cleanup

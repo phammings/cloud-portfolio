@@ -2,11 +2,14 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Portfolio API",
-    "version": "1.0.0",
-    "description": "Public routes of portfolio-api. Admin routes (PUT/DELETE/uploads, Cognito JWT) are added in Stage 2."
+    "version": "1.1.0",
+    "description": "portfolio-api. Public: GET /content, POST /views. Admin routes need a Cognito access token (OAuth2 authorization code + PKCE). In Bruno, use the cognito auth on admin requests and set the callback URL to http://localhost:5173/admin."
   },
   "servers": [
-    { "url": "https://fb769umpf4.execute-api.ca-central-1.amazonaws.com", "description": "prod" }
+    {
+      "url": "https://fb769umpf4.execute-api.ca-central-1.amazonaws.com",
+      "description": "prod"
+    }
   ],
   "paths": {
     "/content": {
@@ -16,7 +19,13 @@
         "responses": {
           "200": {
             "description": "Profile, projects and experience, each list sorted by order",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Content" } } }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Content"
+                }
+              }
+            }
           }
         }
       }
@@ -33,11 +42,234 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": { "views": { "type": "integer", "example": 3174 } },
-                  "required": ["views"]
+                  "properties": {
+                    "views": {
+                      "type": "integer",
+                      "example": 3174
+                    }
+                  },
+                  "required": [
+                    "views"
+                  ]
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/items/{type}/{id}": {
+      "parameters": [
+        {
+          "name": "type",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "profile",
+              "project",
+              "experience"
+            ]
+          },
+          "description": "profile is a single item, so its id is ignored (use any value, e.g. me)"
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+            "example": "airbnb-clone"
+          }
+        }
+      ],
+      "put": {
+        "summary": "Create or replace a content item",
+        "operationId": "putItem",
+        "security": [
+          {
+            "cognito": [
+              "openid",
+              "email"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "title": "New Project",
+                "summary": "One-line summary",
+                "body": "Long description",
+                "tech": [
+                  "React",
+                  "AWS"
+                ],
+                "images": [],
+                "github": "",
+                "liveUrl": "",
+                "order": 12,
+                "featured": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid type, id or body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a content item",
+        "operationId": "deleteItem",
+        "security": [
+          {
+            "cognito": [
+              "openid",
+              "email"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deleted": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid type, id or body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          }
+        }
+      }
+    },
+    "/uploads": {
+      "post": {
+        "summary": "Get a presigned S3 POST for a PDF or image (max 10 MB)",
+        "operationId": "createUpload",
+        "security": [
+          {
+            "cognito": [
+              "openid",
+              "email"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "filename",
+                  "contentType"
+                ],
+                "properties": {
+                  "filename": {
+                    "type": "string",
+                    "example": "resume.pdf"
+                  },
+                  "contentType": {
+                    "type": "string",
+                    "enum": [
+                      "application/pdf",
+                      "image/png",
+                      "image/jpeg",
+                      "image/webp",
+                      "image/gif"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "POST the file as multipart form data to url with fields, then store key on the item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "example": "media/0f1e.../resume.pdf"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "fields": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid type, id or body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
           }
         }
       }
@@ -48,11 +280,54 @@
       "Content": {
         "type": "object",
         "properties": {
-          "profile": { "type": "object", "nullable": true, "additionalProperties": true },
-          "projects": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
-          "experience": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+          "profile": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "projects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "experience": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
         },
-        "required": ["profile", "projects", "experience"]
+        "required": [
+          "profile",
+          "projects",
+          "experience"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "cognito": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://ryanlepham-portfolio.auth.ca-central-1.amazoncognito.com/oauth2/authorize",
+            "tokenUrl": "https://ryanlepham-portfolio.auth.ca-central-1.amazoncognito.com/oauth2/token",
+            "scopes": {
+              "openid": "OpenID",
+              "email": "Email"
+            }
+          }
+        }
       }
     }
   }
