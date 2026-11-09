@@ -2,7 +2,7 @@
 
 ## Progress
 - [x] Stage 0: plan doc
-- [ ] Stage 1: infra foundation
+- [x] Stage 1: infra foundation (API: `https://fb769umpf4.execute-api.ca-central-1.amazonaws.com`)
 - [ ] Stage 2: auth, write API, seed
 - [ ] Stage 3: public site (`frontend/`)
 - [ ] Stage 4: admin
