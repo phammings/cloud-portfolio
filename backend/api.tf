@@ -76,7 +76,8 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      TABLE_NAME = aws_dynamodb_table.portfolio.name
+      TABLE_NAME   = aws_dynamodb_table.portfolio.name
+      MEDIA_BUCKET = local.site_bucket
     }
   }
 }

@@ -1,13 +1,29 @@
+import base64
 import json
 import os
+import re
+import uuid
+from decimal import Decimal
 
 import boto3
 from boto3.dynamodb.conditions import Key
 
 table = boto3.resource("dynamodb").Table(os.environ.get("TABLE_NAME", "portfolio"))
+s3 = boto3.client("s3")
+MEDIA_BUCKET = os.environ.get("MEDIA_BUCKET", "")
 
 # SK prefix -> key in the /content response
 COLLECTIONS = {"PROJECT#": "projects", "EXPERIENCE#": "experience"}
+# {type} path param -> SK prefix. Profile is a single item, so its {id} is ignored.
+ITEM_TYPES = {"project": "PROJECT#", "experience": "EXPERIENCE#"}
+ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
+MAX_BODY_BYTES = 100_000
+UPLOAD_TYPES = {"application/pdf", "image/png", "image/jpeg", "image/webp", "image/gif"}
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+
+
+class BadRequest(Exception):
+    pass
 
 
 def _json_default(value):
@@ -58,9 +74,72 @@ def increment_views():
     return {"views": result["Attributes"]["views"]}
 
 
+def _sort_key(event):
+    params = event.get("pathParameters") or {}
+    item_type, item_id = params.get("type"), params.get("id", "")
+    if item_type == "profile":
+        return "PROFILE"
+    if item_type not in ITEM_TYPES:
+        raise BadRequest(f"type must be one of: profile, {', '.join(ITEM_TYPES)}")
+    if not ID_PATTERN.match(item_id):
+        raise BadRequest("id must be lowercase letters, digits and dashes (max 64)")
+    return ITEM_TYPES[item_type] + item_id
+
+
+def _json_body(event):
+    body = event.get("body") or ""
+    if event.get("isBase64Encoded"):
+        body = base64.b64decode(body).decode()
+    if len(body) > MAX_BODY_BYTES:
+        raise BadRequest("body too large")
+    try:
+        # DynamoDB rejects floats, so parse them as Decimal
+        data = json.loads(body, parse_float=Decimal)
+    except ValueError:
+        raise BadRequest("body must be JSON")
+    if not isinstance(data, dict):
+        raise BadRequest("body must be a JSON object")
+    return data
+
+
+def put_item(event):
+    sk = _sort_key(event)
+    data = _json_body(event)
+    for reserved in ("PK", "SK", "id"):
+        data.pop(reserved, None)
+    table.put_item(Item={"PK": "SITE", "SK": sk, **data})
+    return data
+
+
+def delete_item(event):
+    table.delete_item(Key={"PK": "SITE", "SK": _sort_key(event)})
+    return {"deleted": True}
+
+
+def create_upload(event):
+    data = _json_body(event)
+    content_type = data.get("contentType")
+    if content_type not in UPLOAD_TYPES:
+        raise BadRequest(f"contentType must be one of: {', '.join(sorted(UPLOAD_TYPES))}")
+    name = re.sub(r"[^a-zA-Z0-9._-]", "-", str(data.get("filename") or "file"))[-100:]
+    key = f"media/{uuid.uuid4().hex}/{name}"
+    # A presigned POST (not PUT) so S3 itself enforces the type and size limits
+    post = s3.generate_presigned_post(
+        Bucket=MEDIA_BUCKET,
+        Key=key,
+        Fields={"Content-Type": content_type},
+        Conditions=[{"Content-Type": content_type}, ["content-length-range", 1, MAX_UPLOAD_BYTES]],
+        ExpiresIn=300,
+    )
+    return {"key": key, "url": post["url"], "fields": post["fields"]}
+
+
 ROUTES = {
-    "GET /content": get_content,
-    "POST /views": increment_views,
+    "GET /content": lambda event: get_content(),
+    "POST /views": lambda event: increment_views(),
+    "PUT /items/{type}/{id}": put_item,
+    "DELETE /items/{type}/{id}": delete_item,
+    "POST /uploads": create_upload,
 }
 
 
@@ -68,4 +147,7 @@ def lambda_handler(event, context):
     route = ROUTES.get(event.get("routeKey"))
     if route is None:
         return _response(404, {"message": "Not found"})
-    return _response(200, route())
+    try:
+        return _response(200, route(event))
+    except BadRequest as error:
+        return _response(400, {"message": str(error)})
