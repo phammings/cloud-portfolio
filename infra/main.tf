@@ -4,13 +4,13 @@ resource "aws_lambda_function" "myfunc" {
   function_name    = "myfunc"
   role             = aws_iam_role.iam_for_lambda.arn
   handler          = "func.lambda_handler"
-  runtime          = "python3.8"
+  runtime          = "python3.14"
+  architectures    = ["arm64"]
 
   lifecycle {
     ignore_changes = [
       # Ignore changes to these attributes during updates
       # This prevents Terraform from attempting to update the existing resource
-      source_code_hash,
       role,
     ]
     create_before_destroy = true
