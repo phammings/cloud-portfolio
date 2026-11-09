@@ -1,0 +1,59 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Portfolio API",
+    "version": "1.0.0",
+    "description": "Public routes of portfolio-api. Admin routes (PUT/DELETE/uploads, Cognito JWT) are added in Stage 2."
+  },
+  "servers": [
+    { "url": "https://fb769umpf4.execute-api.ca-central-1.amazonaws.com", "description": "prod" }
+  ],
+  "paths": {
+    "/content": {
+      "get": {
+        "summary": "Get all site content",
+        "operationId": "getContent",
+        "responses": {
+          "200": {
+            "description": "Profile, projects and experience, each list sorted by order",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Content" } } }
+          }
+        }
+      }
+    },
+    "/views": {
+      "post": {
+        "summary": "Increment the page view counter",
+        "operationId": "incrementViews",
+        "description": "Atomically adds 1 to COUNTER/VIEWS and returns the new count.",
+        "responses": {
+          "200": {
+            "description": "New view count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "views": { "type": "integer", "example": 3174 } },
+                  "required": ["views"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Content": {
+        "type": "object",
+        "properties": {
+          "profile": { "type": "object", "nullable": true, "additionalProperties": true },
+          "projects": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "experience": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+        },
+        "required": ["profile", "projects", "experience"]
+      }
+    }
+  }
+}
