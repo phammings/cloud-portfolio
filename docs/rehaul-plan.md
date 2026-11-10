@@ -6,7 +6,9 @@
 - [x] Stage 2: auth, write API, seed
   - Cognito pool `ca-central-1_puctf6Zuu`, client `3csaagvn6ld18gnjlbt1eeaq1f`, login `https://ryanlepham-portfolio.auth.ca-central-1.amazoncognito.com`
   - Seeded: profile, 11 projects (ids are title slugs), resume + 23 files under `media/`. The frontend sync now excludes `media/*`.
-- [ ] Stage 3: public site (`frontend/`)
+- [x] Stage 3: public site (`frontend/`), not deployed until Stage 5
+  - Vite 8 + React 19 + TS + Tailwind v4 + React Router 8 (v8 was latest, not v7).
+  - `VITE_API_URL` is in `frontend/.env`. In dev, `media/` loads from the live site (`.env.development`), and in prod it's same-origin.
 - [ ] Stage 4: admin
 - [ ] Stage 5: cutover and cleanup
 
