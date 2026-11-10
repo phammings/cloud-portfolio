@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { countView, paragraphs } from '../api'
 import { SocialLinks } from '../components/Layout'
-import { GoldenSpiral } from '../components/GoldenSpiral'
+import { WaveField } from '../components/WaveField'
 import { useContent } from '../content'
 
 export function Landing() {
@@ -47,7 +47,7 @@ export function Landing() {
       </div>
 
       <div className="h-80 sm:h-[28rem] lg:h-[34rem]">
-        <GoldenSpiral
+        <WaveField
           stats={[
             { value: views, caption: 'Site views' },
             { value: content ? content.projects.length : null, caption: 'Projects' },
