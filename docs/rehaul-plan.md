@@ -95,7 +95,8 @@ Media (resume and project images) goes in the existing site bucket under `media/
   - **Hero visual (replaces the stippled portrait):** a *vertical wave field* drawn as particles on a `<canvas>` (`frontend/src/components/WaveField.tsx`).
     - Columns of dots sway sideways in two overlapping slow sine waves, calmer at the edges.
     - Soft bands of brightness drift down each strand, and the field fades out at the top and bottom.
-    - The live stats (**site views**, **project count**, **technology count**) are overlaid on the waves with a blurred dark backdrop.
+    - It is a background layer behind the whole hero, masked so it fades in from behind the left-hand text.
+    - The live stats (**site views**, **project count**, **technology count**) use the headline type with a soft radial glow behind them, not boxes.
     - Respects `prefers-reduced-motion` with a static render.
     - Earlier volume-profile and golden-spiral versions were replaced at the owner's request.
   - Dark only (the design is dark-native), so there's no light mode.

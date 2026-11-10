@@ -21,7 +21,7 @@ export function Layout() {
   const name = content?.profile?.name ?? 'Ryan Pham'
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-dvh flex-col overflow-x-clip">
       <Starfield />
 
       <header className="sticky top-0 z-20 border-b border-line/60 bg-ink/80 backdrop-blur">

@@ -1,14 +1,12 @@
 import { useRef } from 'react'
 import { useCanvas } from '../canvas'
 
-export type WaveStat = { value: number | null; caption: string }
-
 const COLUMN_GAP = 14 // px between strands
 const DOT_GAP = 6 // px between dots in a strand
 const FADE = 0.18 // top/bottom fraction that fades out
 
-/** Columns of dots that sway sideways in slow, overlapping sine waves, with the stats laid over them. */
-export function WaveField({ stats }: { stats: WaveStat[] }) {
+/** Background of dot columns swaying sideways in slow, overlapping sine waves. */
+export function WaveField({ className = '' }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null)
 
   useCanvas(ref, (ctx, width, height, time, still) => {
@@ -38,21 +36,5 @@ export function WaveField({ stats }: { stats: WaveStat[] }) {
     }
   })
 
-  return (
-    <figure className="relative h-full w-full" aria-label="Site statistics">
-      {/* Absolutely positioned so the canvas's pixel size never feeds back into the layout. */}
-      <canvas ref={ref} aria-hidden className="absolute inset-0 h-full w-full" />
-      <dl className="relative flex h-full flex-col items-start justify-center gap-6 px-6 sm:px-10">
-        {stats.map((stat) => (
-          // dt before dd in the DOM for screen readers; flipped visually so the number sits on top.
-          <div key={stat.caption} className="flex flex-col-reverse bg-ink/70 px-4 py-2 backdrop-blur-sm">
-            <dt className="text-[11px] uppercase tracking-widest text-muted">{stat.caption}</dt>
-            <dd className="text-3xl font-extrabold tabular-nums sm:text-4xl">
-              {stat.value === null ? '—' : stat.value.toLocaleString()}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </figure>
-  )
+  return <canvas ref={ref} aria-hidden className={`pointer-events-none ${className}`} />
 }
