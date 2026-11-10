@@ -26,7 +26,7 @@ export function Layout() {
 
       <header className="sticky top-0 z-20 border-b border-line/60 bg-ink/80 backdrop-blur">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-8">
-          <Link to="/" className="border-2 border-paper px-2 py-0.5 text-sm font-bold tracking-wider" onClick={() => setOpen(false)}>
+          <Link to="/" className="grid size-10 place-items-center border-2 border-paper pl-[0.16em] text-sm font-bold tracking-wider" onClick={() => setOpen(false)}>
             {initials(name)}
           </Link>
 
