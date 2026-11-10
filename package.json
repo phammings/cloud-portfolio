@@ -2,8 +2,8 @@
   "name": "cloud-portfolio",
   "private": true,
   "scripts": {
-    "start": "npm --prefix frontend install --no-audit --no-fund && npm --prefix frontend run dev",
-    "dev": "npm --prefix frontend run dev",
+    "start": "npm --prefix frontend install --no-audit --no-fund && npm --prefix frontend run dev --",
+    "dev": "npm --prefix frontend run dev --",
     "build": "npm --prefix frontend run build"
   }
 }

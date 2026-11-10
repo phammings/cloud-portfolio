@@ -38,7 +38,7 @@ export type Experience = {
 
 export type Content = {
   profile: Profile | null
-  secret: { images: string[] } | null
+  secret: { images: string[]; spotifyUrl?: string } | null
   projects: Project[]
   experience: Experience[]
 }
@@ -57,6 +57,9 @@ export const countView = () =>
   (viewsRequest ??= request<{ views: number }>('/views', { method: 'POST' }).then((r) => r.views))
 
 export const mediaUrl = (key: string) => `${MEDIA_URL}/${key}`
+
+/** Track id from an open.spotify.com track link (with or without an intl-xx/ segment or query string). */
+export const spotifyTrackId = (url = '') => url.match(/^https:\/\/open\.spotify\.com\/(?:intl-[a-z-]+\/)?track\/([A-Za-z0-9]{22})(?:[/?#]|$)/)?.[1]
 
 // Plain text from the admin -> paragraphs, one per line
 export const paragraphs = (text = '') => text.split(/\n+/).map((p) => p.trim()).filter(Boolean)

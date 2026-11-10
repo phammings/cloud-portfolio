@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { FiX } from 'react-icons/fi'
-import { mediaUrl } from '../api'
+import { mediaUrl, spotifyTrackId } from '../api'
 
 const SLIDE_MS = 4500
 const FADE_MS = 700
 
 /** Fullscreen easter-egg slideshow: dims the page, then crossfades through the images with a slow zoom. */
-export function SecretSlideshow({ images, onClose }: { images: string[]; onClose: () => void }) {
+export function SecretSlideshow({ images, spotifyUrl, onClose }: { images: string[]; spotifyUrl?: string; onClose: () => void }) {
+  const trackId = spotifyTrackId(spotifyUrl)
   const [index, setIndex] = useState(0)
   const [shown, setShown] = useState(false)
   const closeButton = useRef<HTMLButtonElement>(null)
@@ -84,8 +85,23 @@ export function SecretSlideshow({ images, onClose }: { images: string[]; onClose
         <FiX size={24} />
       </button>
 
+      {trackId && (
+        // Spotify's official player: licensed playback (full track when logged in to Spotify, otherwise a preview).
+        // Clicks on it must not close the slideshow.
+        <div className="absolute bottom-12 left-4 w-[min(320px,calc(100%-2rem))] sm:bottom-6" onClick={(event) => event.stopPropagation()}>
+          <iframe
+            title="Slideshow music on Spotify"
+            src={`https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`}
+            height={80}
+            className="w-full rounded-xl border-0"
+            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+            loading="lazy"
+          />
+        </div>
+      )}
+
       {images.length > 1 && (
-        <ol className="absolute inset-x-0 bottom-6 flex justify-center gap-2" aria-hidden>
+        <ol className="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center gap-2" aria-hidden>
           {images.map((image, i) => (
             <li key={image} className={`h-1 w-6 transition-colors ${i === index ? 'bg-paper' : 'bg-paper/25'}`} />
           ))}

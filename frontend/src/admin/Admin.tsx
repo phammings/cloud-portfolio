@@ -94,7 +94,7 @@ export default function Admin() {
             {tab === 'Profile' && <ProfileEditor profile={content.profile} act={act} />}
             {tab === 'Projects' && <ProjectsEditor projects={content.projects} act={act} />}
             {tab === 'Experience' && <ExperienceEditor experience={content.experience} act={act} />}
-            {tab === 'Secret' && <SecretEditor images={content.secret?.images ?? []} act={act} />}
+            {tab === 'Secret' && <SecretEditor secret={content.secret} act={act} />}
           </fieldset>
         </>
       )}
