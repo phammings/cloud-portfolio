@@ -92,11 +92,13 @@ Media (resume and project images) goes in the existing site bucket under `media/
   - Intro paragraph in light grey (`#9a9a9a`), a lighter-weight sans, generous line height.
   - Social icons as a monochrome grey row (GitHub, LinkedIn, email, resume), white on hover.
   - **Top nav bar:** About · Projects · Experience · Resume, uppercase small caps with wide tracking; active link underlined.
-  - **Hero visual (replaces the stippled portrait):** a *volume profile* drawn as particles on a `<canvas>`.
-    - Horizontal histogram bars made of stippled dots, densest at the point of control (POC), fading toward the edges, with a subtle shimmer.
-    - Price-level-style labels on the right axis show live stats: **POC = site views**, plus project count, years of experience and tech count, styled like VAH/VAL/POC markers.
-    - Data comes from `/content` + `/views`.
+  - **Hero visual (replaces the stippled portrait):** a *golden-angle spiral* drawn as particles on a `<canvas>` (`frontend/src/components/GoldenSpiral.tsx`).
+    - 720 seeds at angle n·137.5° and radius √n (Vogel's sunflower model).
+    - Seeds lying on 3 golden spirals (growing by φ every quarter turn) glow brighter.
+    - It spirals in on load and rotates slowly.
+    - A stats column beside it shows live **site views**, **project count** and **technology count** from `/views` + `/content`.
     - Respects `prefers-reduced-motion` with a static render.
+    - Replaced an earlier volume-profile version at the owner's request.
   - Dark only (the design is dark-native), so there's no light mode.
   - Tokens are defined once as Tailwind v4 `@theme` variables.
 - Data: fetch `GET /content` once into a context, and `POST /views` on landing. The API URL comes from `VITE_API_URL`.
