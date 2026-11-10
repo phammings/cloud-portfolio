@@ -10,7 +10,9 @@ from boto3.dynamodb.conditions import Key
 
 table = boto3.resource("dynamodb").Table(os.environ.get("TABLE_NAME", "portfolio"))
 s3 = boto3.client("s3")
+cognito = boto3.client("cognito-idp")
 MEDIA_BUCKET = os.environ.get("MEDIA_BUCKET", "")
+COGNITO_CLIENT_ID = os.environ.get("COGNITO_CLIENT_ID", "")
 
 # SK prefix -> key in the /content response
 COLLECTIONS = {"PROJECT#": "projects", "EXPERIENCE#": "experience"}
@@ -22,8 +24,24 @@ UPLOAD_TYPES = {"application/pdf", "image/png", "image/jpeg", "image/webp", "ima
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 
 
-class BadRequest(Exception):
-    pass
+class HttpError(Exception):
+    status = 500
+
+
+class BadRequest(HttpError):
+    status = 400
+
+
+class Unauthorized(HttpError):
+    status = 401
+
+
+class Forbidden(HttpError):
+    status = 403
+
+
+class TooManyRequests(HttpError):
+    status = 429
 
 
 def _json_default(value):
@@ -134,9 +152,32 @@ def create_upload(event):
     return {"key": key, "url": post["url"], "fields": post["fields"]}
 
 
+def login(event):
+    data = _json_body(event)
+    email, password = data.get("email"), data.get("password")
+    if not isinstance(email, str) or not isinstance(password, str) or not email or not password:
+        raise BadRequest("email and password are required")
+    try:
+        result = cognito.initiate_auth(
+            ClientId=COGNITO_CLIENT_ID,
+            AuthFlow="USER_PASSWORD_AUTH",
+            AuthParameters={"USERNAME": email, "PASSWORD": password},
+        )
+    except (cognito.exceptions.NotAuthorizedException, cognito.exceptions.UserNotFoundException):
+        # Same answer for unknown email and wrong password
+        raise Unauthorized("Incorrect email or password")
+    except cognito.exceptions.TooManyRequestsException:
+        raise TooManyRequests("Too many attempts, try again later")
+    if "AuthenticationResult" not in result:
+        raise Forbidden(f"Login needs another step ({result.get('ChallengeName')}); set your password on the hosted login page first")
+    tokens = result["AuthenticationResult"]
+    return {"accessToken": tokens["AccessToken"], "expiresIn": tokens["ExpiresIn"], "tokenType": "Bearer"}
+
+
 ROUTES = {
     "GET /content": lambda event: get_content(),
     "POST /views": lambda event: increment_views(),
+    "POST /login": login,
     "PUT /items/{type}/{id}": put_item,
     "DELETE /items/{type}/{id}": delete_item,
     "POST /uploads": create_upload,
@@ -149,5 +190,5 @@ def lambda_handler(event, context):
         return _response(404, {"message": "Not found"})
     try:
         return _response(200, route(event))
-    except BadRequest as error:
-        return _response(400, {"message": str(error)})
+    except HttpError as error:
+        return _response(error.status, {"message": str(error)})

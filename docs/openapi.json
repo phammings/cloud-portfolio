@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Portfolio API",
-    "version": "1.2.0",
-    "description": "portfolio-api. Public: GET /content, POST /views. Admin routes need a Cognito access token (OAuth2 authorization code + PKCE). In Bruno, use the cognito auth on admin requests and set the callback URL to http://localhost:5173/admin."
+    "version": "1.3.0",
+    "description": "portfolio-api. Public: GET /content, POST /views, POST /login. Admin routes need the accessToken from POST /login as a Bearer token (or a token from the Cognito hosted login, OAuth2 code + PKCE)."
   },
   "servers": [
     {
@@ -275,67 +275,73 @@
       }
     },
     "/login": {
-      "servers": [
-        {
-          "url": "https://cognito-idp.ca-central-1.amazonaws.com",
-          "description": "Cognito (not the portfolio API)"
-        }
-      ],
       "post": {
-        "summary": "Log in and get an access token (Cognito InitiateAuth)",
-        "description": "This is Cognito's own API, not the portfolio API. The real path is / ; Bruno shows it as /login. If the import keeps /login, change the URL to https://cognito-idp.ca-central-1.amazonaws.com/ . Use AuthenticationResult.AccessToken as the Bearer token on admin requests. On first login Cognito returns ChallengeName NEW_PASSWORD_REQUIRED instead: set your password once through the hosted login page, then this works.",
+        "summary": "Log in and get an access token",
+        "description": "Exchanges your Cognito email + password for a 1-hour access token. Send it as 'Authorization: Bearer <accessToken>' on admin requests. Rate limited to 1 request/sec (burst 5). Returns 403 until you've replaced the emailed temporary password on the hosted login page.",
         "operationId": "login",
-        "parameters": [
-          {
-            "name": "X-Amz-Target",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "default": "AWSCognitoIdentityProviderService.InitiateAuth"
-            }
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
-            "application/x-amz-json-1.1": {
+            "application/json": {
               "schema": {
-                "type": "object"
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
               },
               "example": {
-                "AuthFlow": "USER_PASSWORD_AUTH",
-                "ClientId": "3csaagvn6ld18gnjlbt1eeaq1f",
-                "AuthParameters": {
-                  "USERNAME": "ryanlepham9@gmail.com",
-                  "PASSWORD": "your-password"
-                }
+                "email": "ryanlepham9@gmail.com",
+                "password": "your-password"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Tokens",
+            "description": "Access token",
             "content": {
-              "application/x-amz-json-1.1": {
+              "application/json": {
                 "schema": {
-                  "type": "object"
-                },
-                "example": {
-                  "AuthenticationResult": {
-                    "AccessToken": "eyJ...",
-                    "ExpiresIn": 3600,
-                    "TokenType": "Bearer",
-                    "IdToken": "eyJ...",
-                    "RefreshToken": "eyJ..."
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "expiresIn": {
+                      "type": "integer",
+                      "example": 3600
+                    },
+                    "tokenType": {
+                      "type": "string",
+                      "example": "Bearer"
+                    }
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "NotAuthorizedException: wrong email or password"
+            "description": "Missing email or password"
+          },
+          "401": {
+            "description": "Incorrect email or password"
+          },
+          "403": {
+            "description": "Password change still required"
+          },
+          "429": {
+            "description": "Too many attempts"
           }
         }
       }

@@ -76,8 +76,9 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      TABLE_NAME   = aws_dynamodb_table.portfolio.name
-      MEDIA_BUCKET = local.site_bucket
+      TABLE_NAME        = aws_dynamodb_table.portfolio.name
+      MEDIA_BUCKET      = local.site_bucket
+      COGNITO_CLIENT_ID = aws_cognito_user_pool_client.admin.id
     }
   }
 }
@@ -102,7 +103,7 @@ resource "aws_apigatewayv2_integration" "api" {
 }
 
 resource "aws_apigatewayv2_route" "public" {
-  for_each  = toset(["GET /content", "POST /views"])
+  for_each  = toset(["GET /content", "POST /views", "POST /login"])
   api_id    = aws_apigatewayv2_api.api.id
   route_key = each.value
   target    = "integrations/${aws_apigatewayv2_integration.api.id}"
@@ -118,6 +119,15 @@ resource "aws_apigatewayv2_stage" "default" {
     throttling_burst_limit = 50
     throttling_rate_limit  = 20
   }
+
+  # Login gets its own tight limit so password guessing can't eat the shared budget.
+  route_settings {
+    route_key              = "POST /login"
+    throttling_burst_limit = 5
+    throttling_rate_limit  = 1
+  }
+
+  depends_on = [aws_apigatewayv2_route.public]
 }
 
 resource "aws_lambda_permission" "api" {

@@ -110,6 +110,39 @@ class TestHandler(unittest.TestCase):
         self.assertEqual(status, 400)
         mock_s3.generate_presigned_post.assert_not_called()
 
+    @patch("handler.cognito")
+    def test_login_returns_access_token(self, mock_cognito):
+        mock_cognito.initiate_auth.return_value = {
+            "AuthenticationResult": {"AccessToken": "jwt", "ExpiresIn": 3600, "IdToken": "id", "RefreshToken": "r"}
+        }
+
+        status, body = call("POST /login", json.dumps({"email": "a@b.com", "password": "pw"}))
+
+        self.assertEqual((status, body), (200, {"accessToken": "jwt", "expiresIn": 3600, "tokenType": "Bearer"}))
+        kwargs = mock_cognito.initiate_auth.call_args.kwargs
+        self.assertEqual(kwargs["AuthFlow"], "USER_PASSWORD_AUTH")
+        self.assertEqual(kwargs["AuthParameters"], {"USERNAME": "a@b.com", "PASSWORD": "pw"})
+
+    @patch("handler.cognito")
+    def test_login_failures_map_to_status_codes(self, mock_cognito):
+        class NotAuthorized(Exception): pass
+        class UserNotFound(Exception): pass
+        class TooMany(Exception): pass
+        mock_cognito.exceptions.NotAuthorizedException = NotAuthorized
+        mock_cognito.exceptions.UserNotFoundException = UserNotFound
+        mock_cognito.exceptions.TooManyRequestsException = TooMany
+        good_body = json.dumps({"email": "a@b.com", "password": "pw"})
+
+        for error, expected in [(NotAuthorized, 401), (UserNotFound, 401), (TooMany, 429)]:
+            with self.subTest(error=error.__name__):
+                mock_cognito.initiate_auth.side_effect = error()
+                status, body = call("POST /login", good_body)
+                self.assertEqual(status, expected)
+        mock_cognito.initiate_auth.side_effect = None
+        mock_cognito.initiate_auth.return_value = {"ChallengeName": "NEW_PASSWORD_REQUIRED"}
+        self.assertEqual(call("POST /login", good_body)[0], 403)
+        self.assertEqual(call("POST /login", json.dumps({"email": "a@b.com"}))[0], 400)
+
 
 if __name__ == "__main__":
     unittest.main()
