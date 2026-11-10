@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Copied from docs/openapi.json by the predev/prebuild scripts
+public/openapi.json

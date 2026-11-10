@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "cp ../docs/openapi.json public/openapi.json",
+    "prebuild": "cp ../docs/openapi.json public/openapi.json",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",

@@ -100,7 +100,13 @@ export function Layout() {
       </main>
 
       <footer className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-xs tracking-wider text-dim sm:flex-row sm:px-8">
-        <span>© {YEAR} {name.toUpperCase()}</span>
+        <span className="flex gap-6">
+          <span>© {YEAR} {name.toUpperCase()}</span>
+          {/* A static page outside the app, so a plain link (full page load) rather than a router Link. */}
+          <a href="/api-docs.html" className="transition-colors hover:text-paper">
+            API
+          </a>
+        </span>
         <SocialLinks />
       </footer>
     </div>

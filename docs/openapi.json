@@ -2,23 +2,49 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Portfolio API",
-    "version": "1.4.0",
-    "description": "portfolio-api. Public: GET /content, POST /views, POST /login. Admin routes need the accessToken from POST /login as a Bearer token (or a token from the Cognito hosted login, OAuth2 code + PKCE)."
+    "version": "2.0.0",
+    "description": "Backend for [ryanlepham.com](https://www.ryanlepham.com): an API Gateway HTTP API in front of one Python Lambda (`portfolio-api`) and a single DynamoDB table (`portfolio`).\n\n## Data model\nAll site content lives under partition `PK=SITE`, so `GET /content` is a single Query:\n\n| Sort key | Item |\n|---|---|\n| `PROFILE` | the profile (single item) |\n| `SECRET` | the logo easter-egg slideshow (single item) |\n| `PROJECT#<id>` | one project |\n| `EXPERIENCE#<id>` | one role |\n\nThe view counter is a separate item, `PK=COUNTER, SK=VIEWS`. Lists are ordered by each item's `order` field.\n\n## Authentication\nAdmin routes require a Cognito access token: call `POST /login`, then send `Authorization: Bearer <accessToken>`. Tokens last 1 hour. API Gateway's JWT authorizer validates the token before the Lambda runs.\n\n## Limits\n- All routes: 20 requests/s, bursts of 50.\n- `POST /login`: 1 request/s, bursts of 5.\n- Browsers may only call the API from `https://ryanlepham.com`, `https://www.ryanlepham.com` and `http://localhost:5173` (CORS).",
+    "contact": {
+      "name": "Ryan Pham",
+      "url": "https://www.ryanlepham.com"
+    },
+    "license": {
+      "name": "All rights reserved",
+      "url": "https://www.ryanlepham.com"
+    }
   },
   "servers": [
     {
       "url": "https://fb769umpf4.execute-api.ca-central-1.amazonaws.com",
-      "description": "prod"
+      "description": "Production (ca-central-1)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Public",
+      "description": "Read-only content and the view counter, used by the public site."
+    },
+    {
+      "name": "Auth",
+      "description": "Exchange the admin's email and password for an access token."
+    },
+    {
+      "name": "Admin",
+      "description": "Create, update and delete content and upload media. Requires a Bearer access token."
     }
   ],
   "paths": {
     "/content": {
       "get": {
-        "summary": "Get all site content",
+        "tags": [
+          "Public"
+        ],
         "operationId": "getContent",
+        "summary": "Get all site content",
+        "description": "Returns the profile, the secret slideshow, all projects and all experience in one response. Projects and experience are sorted by `order`. Media fields hold S3 keys (e.g. `media/projects/x.png`), served from the site's own domain at `https://www.ryanlepham.com/<key>`.",
         "responses": {
           "200": {
-            "description": "Profile, projects and experience, each list sorted by order",
+            "description": "All site content",
             "content": {
               "application/json": {
                 "schema": {
@@ -26,260 +52,77 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Rate limit exceeded (API Gateway throttling)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "Too Many Requests"
+                }
+              }
+            }
           }
-        }
+        },
+        "security": []
       }
     },
     "/views": {
       "post": {
-        "summary": "Increment the page view counter",
+        "tags": [
+          "Public"
+        ],
         "operationId": "incrementViews",
-        "description": "Atomically adds 1 to COUNTER/VIEWS and returns the new count.",
+        "summary": "Count a page view",
+        "description": "Atomically adds 1 to the view counter (DynamoDB `ADD`, so concurrent visits are never lost) and returns the new total. The landing page calls this once per page load.",
         "responses": {
           "200": {
-            "description": "New view count",
+            "description": "The new total",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "views"
+                  ],
                   "properties": {
                     "views": {
                       "type": "integer",
-                      "example": 3174
-                    }
-                  },
-                  "required": [
-                    "views"
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/items/{type}/{id}": {
-      "parameters": [
-        {
-          "name": "type",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "enum": [
-              "profile",
-              "secret",
-              "project",
-              "experience"
-            ]
-          },
-          "description": "profile and secret are single items, so their id is ignored (use any value, e.g. me). secret holds {images: [...]} for the logo easter-egg slideshow."
-        },
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
-            "example": "airbnb-clone"
-          }
-        }
-      ],
-      "put": {
-        "summary": "Create or replace a content item",
-        "operationId": "putItem",
-        "security": [
-          {
-            "cognito": [
-              "openid",
-              "email"
-            ]
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true
-              },
-              "example": {
-                "title": "New Project",
-                "summary": "One-line summary",
-                "body": "Long description",
-                "tech": [
-                  "React",
-                  "AWS"
-                ],
-                "images": [],
-                "github": "",
-                "liveUrl": "",
-                "order": 12,
-                "featured": false
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Saved item",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid type, id or body",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid access token"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete a content item",
-        "operationId": "deleteItem",
-        "security": [
-          {
-            "cognito": [
-              "openid",
-              "email"
-            ]
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "deleted": {
-                      "type": "boolean"
+                      "example": 3190
                     }
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "Invalid type, id or body",
+          "429": {
+            "description": "Rate limit exceeded (API Gateway throttling)",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid access token"
-          }
-        }
-      }
-    },
-    "/uploads": {
-      "post": {
-        "summary": "Get a presigned S3 POST for a PDF or image (max 10 MB)",
-        "operationId": "createUpload",
-        "security": [
-          {
-            "cognito": [
-              "openid",
-              "email"
-            ]
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "filename",
-                  "contentType"
-                ],
-                "properties": {
-                  "filename": {
-                    "type": "string",
-                    "example": "resume.pdf"
-                  },
-                  "contentType": {
-                    "type": "string",
-                    "enum": [
-                      "application/pdf",
-                      "image/png",
-                      "image/jpeg",
-                      "image/webp",
-                      "image/gif"
-                    ]
-                  }
+                },
+                "example": {
+                  "message": "Too Many Requests"
                 }
               }
             }
           }
         },
-        "responses": {
-          "200": {
-            "description": "POST the file as multipart form data to url with fields, then store key on the item",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "key": {
-                      "type": "string",
-                      "example": "media/0f1e.../resume.pdf"
-                    },
-                    "url": {
-                      "type": "string"
-                    },
-                    "fields": {
-                      "type": "object",
-                      "additionalProperties": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid type, id or body",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid access token"
-          }
-        }
+        "security": []
       }
     },
     "/login": {
       "post": {
-        "summary": "Log in and get an access token",
-        "description": "Exchanges your Cognito email + password for a 1-hour access token. Send it as 'Authorization: Bearer <accessToken>' on admin requests. Rate limited to 1 request/sec (burst 5). Returns 403 until you've replaced the emailed temporary password on the hosted login page.",
+        "tags": [
+          "Auth"
+        ],
         "operationId": "login",
+        "summary": "Log in and get an access token",
+        "description": "Exchanges the admin's Cognito email and password for a 1-hour access token (Cognito `InitiateAuth`, `USER_PASSWORD_AUTH`). An unknown email and a wrong password get the same 401, so the endpoint doesn't reveal which accounts exist. Throttled to 1 request/s (burst 5), on top of Cognito's own lockout.",
         "requestBody": {
           "required": true,
           "content": {
@@ -315,12 +158,19 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "accessToken",
+                    "expiresIn",
+                    "tokenType"
+                  ],
                   "properties": {
                     "accessToken": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Cognito access token (a JWT)."
                     },
                     "expiresIn": {
                       "type": "integer",
+                      "description": "Seconds until expiry.",
                       "example": 3600
                     },
                     "tokenType": {
@@ -333,84 +183,660 @@
             }
           },
           "400": {
-            "description": "Missing email or password"
+            "description": "Missing email or password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Incorrect email or password"
+            "description": "Incorrect email or password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Password change still required"
+            "description": "Another step is required first, e.g. replacing the emailed temporary password on the hosted login page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "429": {
-            "description": "Too many attempts"
+            "description": "Too many attempts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/items/{type}/{id}": {
+      "parameters": [
+        {
+          "name": "type",
+          "in": "path",
+          "required": true,
+          "description": "`profile` and `secret` are single items, so their `id` is ignored (use any value, e.g. `me`). `project` and `experience` are collections keyed by `id`.",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "profile",
+              "secret",
+              "project",
+              "experience"
+            ]
+          }
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "Lowercase letters, digits and dashes, starting with a letter or digit, up to 64 characters. For projects it is also the URL slug (`/projects/<id>`).",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+            "example": "airbnb-clone"
+          }
+        }
+      ],
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "operationId": "putItem",
+        "summary": "Create or replace a content item",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Stores the body as the whole item (a full replace, not a merge), so send every field you want to keep. `PK`, `SK` and `id` in the body are ignored. Bodies are limited to 100 KB, and decimals are stored as DynamoDB numbers.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Profile"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Secret"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ProjectInput"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ExperienceInput"
+                  }
+                ]
+              },
+              "examples": {
+                "project": {
+                  "summary": "PUT /items/project/airbnb-clone",
+                  "value": {
+                    "title": "Airbnb Clone",
+                    "summary": "Full stack Airbnb clone.",
+                    "body": "Paragraph one\nParagraph two",
+                    "tech": [
+                      "Angular",
+                      "Java Spring Boot",
+                      "PostgreSQL"
+                    ],
+                    "images": [
+                      "media/projects/airbnb-screen.png"
+                    ],
+                    "github": "https://github.com/phammings/Airbnb-Clone",
+                    "liveUrl": "https://airbnb.ryanlepham.com",
+                    "order": 2,
+                    "featured": true
+                  }
+                },
+                "experience": {
+                  "summary": "PUT /items/experience/arkhet-ai-full-stack-developer-intern",
+                  "value": {
+                    "role": "Full Stack Developer Intern",
+                    "company": "Arkhet AI",
+                    "start": "September 2024",
+                    "end": "December 2024",
+                    "location": "Toronto, Ontario",
+                    "order": 2,
+                    "bullets": [
+                      "Developed full stack features using React, ExpressJS, and PostgreSQL."
+                    ],
+                    "tech": [
+                      "React",
+                      "Express.js",
+                      "PostgreSQL"
+                    ]
+                  }
+                },
+                "secret": {
+                  "summary": "PUT /items/secret/me",
+                  "value": {
+                    "images": [
+                      "media/abc123/IMG_5255.jpg"
+                    ],
+                    "spotifyUrl": "https://open.spotify.com/track/2vXKRlJBXyOcvZYTdNeckS"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The stored item (without `PK`/`SK`)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unknown type, invalid id, body over 100 KB, or a body that isn't a JSON object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid or expired access token. API Gateway rejects the request before it reaches the Lambda.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "Unauthorized"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (API Gateway throttling)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "Too Many Requests"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "operationId": "deleteItem",
+        "summary": "Delete a content item",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Deletes the item. Deleting an item that doesn't exist still succeeds. Uploaded media it referenced stays in S3.",
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deleted": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unknown type or invalid id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid or expired access token. API Gateway rejects the request before it reaches the Lambda.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "Unauthorized"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (API Gateway throttling)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "Too Many Requests"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/uploads": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "operationId": "createUpload",
+        "summary": "Get a presigned upload for a PDF or image",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Returns a presigned S3 POST, valid for 5 minutes, for a new key under `media/`.\n\n1. Call this with the file's name and content type.\n2. POST the file to `url` as `multipart/form-data`: every entry of `fields` first, then the file as `file`, which must be last.\n3. Save the returned `key` on an item (e.g. a project's `images`).\n\nS3 itself enforces the content type and a maximum size of 10 MB. SVG isn't allowed, because it can carry scripts.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "filename",
+                  "contentType"
+                ],
+                "properties": {
+                  "filename": {
+                    "type": "string",
+                    "description": "Used in the key after sanitising to letters, digits, `.`, `_` and `-`."
+                  },
+                  "contentType": {
+                    "type": "string",
+                    "enum": [
+                      "application/pdf",
+                      "image/png",
+                      "image/jpeg",
+                      "image/webp",
+                      "image/gif"
+                    ]
+                  }
+                }
+              },
+              "example": {
+                "filename": "resume.pdf",
+                "contentType": "application/pdf"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Presigned POST",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "key",
+                    "url",
+                    "fields"
+                  ],
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "example": "media/0f1e2d3c4b5a69788796a5b4c3d2e1f0/resume.pdf"
+                    },
+                    "url": {
+                      "type": "string",
+                      "example": "https://ryanpham-cloud-resume.s3.amazonaws.com/"
+                    },
+                    "fields": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Form fields to send before the file (policy, signature, key, Content-Type, \u2026)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unsupported content type or a body that isn't a JSON object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid or expired access token. API Gateway rejects the request before it reaches the Lambda.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "Unauthorized"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (API Gateway throttling)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "Too Many Requests"
+                }
+              }
+            }
           }
         }
       }
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "A Cognito access token from `POST /login` (or the Cognito hosted login, authorization code + PKCE)."
+      }
+    },
     "schemas": {
-      "Content": {
-        "type": "object",
-        "properties": {
-          "profile": {
-            "type": "object",
-            "nullable": true,
-            "additionalProperties": true
-          },
-          "projects": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "experience": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "secret": {
-            "type": "object",
-            "nullable": true,
-            "properties": {
-              "images": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "required": [
-          "profile",
-          "projects",
-          "experience",
-          "secret"
-        ]
-      },
       "Error": {
         "type": "object",
+        "required": [
+          "message"
+        ],
         "properties": {
           "message": {
             "type": "string"
           }
         }
-      }
-    },
-    "securitySchemes": {
-      "cognito": {
-        "type": "oauth2",
-        "flows": {
-          "authorizationCode": {
-            "authorizationUrl": "https://ryanlepham-portfolio.auth.ca-central-1.amazoncognito.com/oauth2/authorize",
-            "tokenUrl": "https://ryanlepham-portfolio.auth.ca-central-1.amazoncognito.com/oauth2/token",
-            "scopes": {
-              "openid": "OpenID",
-              "email": "Email"
+      },
+      "Profile": {
+        "type": "object",
+        "title": "Profile",
+        "required": [
+          "name",
+          "tagline"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Ryan Pham"
+          },
+          "tagline": {
+            "type": "string",
+            "description": "Landing page headline.",
+            "example": "Software Engineer"
+          },
+          "about": {
+            "type": "string",
+            "description": "One paragraph per line; the first appears on the landing page."
+          },
+          "location": {
+            "type": "string",
+            "example": "Toronto, ON, Canada"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "socials": {
+            "type": "object",
+            "properties": {
+              "github": {
+                "type": "string",
+                "format": "uri"
+              },
+              "linkedin": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          },
+          "resumeKey": {
+            "type": "string",
+            "description": "S3 key of the resume PDF.",
+            "example": "media/resume/Ryan_Pham_resume.pdf"
+          }
+        }
+      },
+      "Secret": {
+        "type": "object",
+        "title": "Secret slideshow",
+        "required": [
+          "images"
+        ],
+        "properties": {
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "S3 keys, in slideshow order."
+          },
+          "spotifyUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional open.spotify.com track link that plays during the slideshow."
+          }
+        }
+      },
+      "ProjectInput": {
+        "type": "object",
+        "title": "Project",
+        "required": [
+          "title",
+          "summary",
+          "order"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string",
+            "description": "One or two sentences for the project card."
+          },
+          "body": {
+            "type": "string",
+            "description": "One paragraph per line."
+          },
+          "tech": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The first four show on the card."
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "S3 keys; the first is the cover."
+          },
+          "github": {
+            "type": "string",
+            "format": "uri"
+          },
+          "liveUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "order": {
+            "type": "integer"
+          },
+          "featured": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ExperienceInput": {
+        "type": "object",
+        "title": "Experience",
+        "required": [
+          "role",
+          "company",
+          "start",
+          "order"
+        ],
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "start": {
+            "type": "string",
+            "example": "April 2025"
+          },
+          "end": {
+            "type": "string",
+            "description": "Empty while the role is current.",
+            "example": ""
+          },
+          "location": {
+            "type": "string"
+          },
+          "bullets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tech": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "order": {
+            "type": "integer"
+          }
+        }
+      },
+      "Project": {
+        "allOf": [
+          {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "airbnb-clone"
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/ProjectInput"
+          }
+        ]
+      },
+      "Experience": {
+        "allOf": [
+          {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/ExperienceInput"
+          }
+        ]
+      },
+      "Content": {
+        "type": "object",
+        "required": [
+          "profile",
+          "secret",
+          "projects",
+          "experience"
+        ],
+        "properties": {
+          "profile": {
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Profile"
+              }
+            ],
+            "nullable": true
+          },
+          "secret": {
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Secret"
+              }
+            ],
+            "nullable": true
+          },
+          "projects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Project"
+            }
+          },
+          "experience": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Experience"
             }
           }
         }

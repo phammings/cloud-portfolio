@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="API reference for the ryanlepham.com portfolio backend." />
+    <title>Portfolio API · Ryan Pham</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+    <style>
+      body {
+        margin: 0;
+        background: #fff;
+      }
+      .back {
+        position: fixed;
+        top: 12px;
+        right: 16px;
+        z-index: 10;
+        padding: 6px 12px;
+        border: 1px solid #0d0d0d;
+        background: #fff;
+        color: #0d0d0d;
+        font: 600 12px/1 "Source Sans 3", sans-serif;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        text-decoration: none;
+      }
+      .back:hover {
+        background: #0d0d0d;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="back" href="/">← Site</a>
+    <div id="redoc"></div>
+
+    <!-- Pinned version with Subresource Integrity, so a changed CDN file is refused instead of run.
+         Redoc 2.x: the 3.x standalone bundle needs to be loaded as an ES module. -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/redoc@2.5.4/bundles/redoc.standalone.js"
+      integrity="sha384-w447zOpYfw/1Tv/5AK9NfHTlQIqE3RVR6KY62jCyy9zNDgO64cMwGGP1Fj0zJVf5"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      // openapi.json is copied from docs/openapi.json at build time (see frontend/package.json).
+      Redoc.init(
+        '/openapi.json',
+        {
+          expandResponses: '200',
+          requiredPropsFirst: true,
+          sortTagsAlphabetically: false,
+          theme: {
+            colors: { primary: { main: '#0d0d0d' } },
+            typography: {
+              fontFamily: '"Source Sans 3", sans-serif',
+              fontSize: '15px',
+              headings: { fontFamily: '"Source Sans 3", sans-serif', fontWeight: '700' },
+              code: { fontFamily: '"JetBrains Mono", monospace' },
+            },
+            sidebar: { backgroundColor: '#f5f5f5' },
+            rightPanel: { backgroundColor: '#0d0d0d' },
+          },
+        },
+        document.getElementById('redoc'),
+      )
+    </script>
+  </body>
+</html>
