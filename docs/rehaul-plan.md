@@ -13,9 +13,9 @@
   - Logs in with an email/password form against `POST /login`, not the hosted UI + `oidc-client-ts` as first planned: there are no redirects and no extra dependency. The token is kept in sessionStorage until it expires (1 h).
   - Profile form, project and experience lists (create/edit/delete/reorder), image and resume uploads via presigned POST. Lazy-loaded chunk (~16 KB).
   - Replaced uploads are not deleted from S3 (harmless leftovers under `media/`).
-- [ ] Stage 5: cutover and cleanup
+- [x] Stage 5: cutover and cleanup
   - [x] Step A (2026-11-09): CI builds and deploys `frontend/`, the view count was copied (3177) into `COUNTER/VIEWS`, and the new site is live.
-  - [ ] Step B: delete `website/`, `backend/main.tf`, `backend/lambda/`, the old `myfunc` Lambda/role/policy and the `cloudresume-test` table.
+  - [x] Step B (2026-11-09): deleted `website/`, `backend/main.tf`, `backend/lambda/`, the one-off `backend/scripts/seed.py`, the old `myfunc` Lambda/role/policy and the `cloudresume-test` table.
 
 ## Context
 The site is a CRA React app with its content hardcoded: projects live in `website/src/_data/projects.json`, so any content change means a code deploy. The backend is a single Lambda (`backend/lambda/func.py`) doing a non-atomic get+put view counter on `cloudresume-test`. That table is `id`-keyed with 1 item.
