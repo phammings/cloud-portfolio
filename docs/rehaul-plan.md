@@ -96,7 +96,7 @@ Media (resume and project images) goes in the existing site bucket under `media/
     - Columns of dots sway sideways in two overlapping slow sine waves, calmer at the edges.
     - Soft bands of brightness drift down each strand, and the field fades out at the top and bottom.
     - It is a background layer behind the whole hero, masked so it fades in from behind the left-hand text.
-    - The live stats (**site views**, **project count**, **technology count**) use the headline type with a soft radial glow behind them, not boxes.
+    - The live stats (**site views**, **project count**, **technology count**) use the headline type, right-aligned to the page edge, with a text shadow (no glow or boxes) for legibility.
     - Respects `prefers-reduced-motion` with a static render.
     - Earlier volume-profile and golden-spiral versions were replaced at the owner's request.
   - Dark only (the design is dark-native), so there's no light mode.

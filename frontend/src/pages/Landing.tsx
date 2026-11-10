@@ -25,7 +25,7 @@ export function Landing() {
       <title>{profile ? `${profile.name} · ${profile.tagline}` : 'Ryan Pham'}</title>
 
       <div>
-        <div className="flex flex-wrap items-center justify-between gap-6">
+        <div className="flex flex-wrap items-center gap-x-10 gap-y-6">
           <h1 className="border-2 border-paper px-5 py-3 text-3xl font-bold uppercase tracking-wider sm:text-4xl">
             I'm {firstName}
           </h1>
@@ -49,9 +49,8 @@ export function Landing() {
         </div>
       </div>
 
-      <dl className="relative flex flex-col gap-10 lg:pl-16">
-        {/* Soft dark glow so the waves fade out behind the numbers instead of boxing them in. */}
-        <div aria-hidden className="absolute -inset-16 -z-10 bg-[radial-gradient(closest-side,var(--color-ink)_35%,transparent)]" />
+      {/* Right-aligned to the page edge, in line with the nav and footer. A text shadow keeps the numbers legible over the waves. */}
+      <dl className="flex flex-col gap-10 [text-shadow:0_0_24px_var(--color-ink),0_0_8px_var(--color-ink)] lg:items-end lg:text-right">
         {[
           { value: views, caption: 'Site views' },
           { value: content ? content.projects.length : null, caption: 'Projects' },
