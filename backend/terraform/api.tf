@@ -22,9 +22,9 @@ resource "aws_dynamodb_table" "portfolio" {
     type = "S"
   }
 
-  # Site content lives only here now, so keep restore points.
+  # Off to keep costs minimal. It must be set explicitly: omitting the block leaves AWS's current setting as is.
   point_in_time_recovery {
-    enabled = true
+    enabled = false
   }
 
   # Changing the name or keys would make Terraform replace the table and wipe all content.

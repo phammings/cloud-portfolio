@@ -152,7 +152,7 @@ One DynamoDB table, `portfolio`, holds everything, keyed by a partition key (`PK
 | `SITE` | `EXPERIENCE#<slug>` | one role |
 | `COUNTER` | `VIEWS` | the visitor count |
 
-Putting all content under `PK=SITE` means the whole site loads with a single `Query`, with no scans and no joins. The counter sits in its own partition so a visit never touches content items. Lists are ordered by an `order` attribute rather than by the sort key, so reordering never has to rewrite keys. Point-in-time recovery is enabled, since this table is the only copy of the content.
+Putting all content under `PK=SITE` means the whole site loads with a single `Query`, with no scans and no joins. The counter sits in its own partition so a visit never touches content items. Lists are ordered by an `order` attribute rather than by the sort key, so reordering never has to rewrite keys. A `prevent_destroy` guard in Terraform stops any change that would replace the table and wipe its content.
 
 ### API
 
