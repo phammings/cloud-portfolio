@@ -1,16 +1,73 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { FiX } from 'react-icons/fi'
-import { mediaUrl } from '../api'
+import { mediaUrl, spotifyTrackId } from '../api'
+
+// Minimal types for Spotify's iFrame API (https://developer.spotify.com/documentation/embeds/references/iframe-api).
+type SpotifyController = {
+  play: () => void
+  destroy: () => void
+  addListener: (event: 'ready', callback: () => void) => void
+}
+type SpotifyIFrameApi = {
+  createController: (
+    element: HTMLElement,
+    options: { uri: string; width?: string | number; height?: string | number },
+    callback: (controller: SpotifyController) => void,
+  ) => void
+}
+declare global {
+  interface Window {
+    onSpotifyIframeApiReady?: (api: SpotifyIFrameApi) => void
+  }
+}
+
+// The API script must only be loaded once per page; it calls window.onSpotifyIframeApiReady when ready.
+let spotifyApi: Promise<SpotifyIFrameApi> | undefined
+const loadSpotifyApi = () =>
+  (spotifyApi ??= new Promise((resolve) => {
+    window.onSpotifyIframeApiReady = resolve
+    const script = document.createElement('script')
+    script.src = 'https://open.spotify.com/embed/iframe-api/v1'
+    script.async = true
+    document.body.append(script)
+  }))
 
 const SLIDE_MS = 4500
 const FADE_MS = 700
 
 /** Fullscreen easter-egg slideshow: dims the page, then crossfades through the images with a slow zoom. */
-export function SecretSlideshow({ images, onClose }: { images: string[]; onClose: () => void }) {
+export function SecretSlideshow({ images, spotifyUrl, onClose }: { images: string[]; spotifyUrl?: string; onClose: () => void }) {
+  const trackId = spotifyTrackId(spotifyUrl)
   const [index, setIndex] = useState(0)
   const [shown, setShown] = useState(false)
   const closeButton = useRef<HTMLButtonElement>(null)
   const openedAt = useRef(0)
+  const playerHost = useRef<HTMLDivElement>(null)
+
+  // Start the song as soon as Spotify's player is ready. The logo triple-click is the user gesture browsers
+  // require for sound; where autoplay is still blocked (Safari/iOS), the visitor can press play.
+  useEffect(() => {
+    const host = playerHost.current
+    if (!trackId || !host) return
+    let controller: SpotifyController | undefined
+    let cancelled = false
+    // Spotify replaces the element it is given, so hand it a throwaway child rather than a React-owned node.
+    const mount = document.createElement('div')
+    host.append(mount)
+    loadSpotifyApi().then((api) => {
+      if (cancelled) return
+      api.createController(mount, { uri: `spotify:track:${trackId}`, width: '100%', height: 80 }, (created) => {
+        controller = created
+        if (cancelled) return created.destroy()
+        created.addListener('ready', () => created.play())
+      })
+    })
+    return () => {
+      cancelled = true
+      controller?.destroy()
+      host.replaceChildren()
+    }
+  }, [trackId])
 
   // Fade out before unmounting so closing mirrors the dim-in.
   const close = useCallback(() => {
@@ -83,6 +140,14 @@ export function SecretSlideshow({ images, onClose }: { images: string[]; onClose
       >
         <FiX size={24} />
       </button>
+
+      {trackId && (
+        // Spotify's official player: licensed playback (full track when logged in to Spotify, otherwise a preview).
+        // Clicks on it must not close the slideshow.
+        <div className="absolute bottom-12 left-4 w-[min(320px,calc(100%-2rem))] sm:bottom-6" onClick={(event) => event.stopPropagation()}>
+          <div ref={playerHost} className="overflow-hidden rounded-xl" aria-label="Slideshow music on Spotify" />
+        </div>
+      )}
 
       {images.length > 1 && (
         <ol className="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center gap-2" aria-hidden>
