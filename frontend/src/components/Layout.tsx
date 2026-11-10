@@ -44,7 +44,6 @@ export function Layout() {
       {secretOpen && (
         <SecretSlideshow
           images={secretImages}
-          spotifyUrl={content?.secret?.spotifyUrl}
           onClose={() => {
             setSecretOpen(false)
             logo.current?.focus()

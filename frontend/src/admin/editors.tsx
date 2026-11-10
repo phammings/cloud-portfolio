@@ -1,6 +1,6 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { FiArrowDown, FiArrowLeft, FiArrowRight, FiArrowUp, FiTrash2, FiUpload } from 'react-icons/fi'
-import { mediaUrl, spotifyTrackId, type Experience, type Profile, type Project } from '../api'
+import { mediaUrl, type Experience, type Profile, type Project } from '../api'
 import { deleteItem, saveItem, slugify, uploadFile, UPLOAD_TYPES, type ItemType } from './adminApi'
 import { buttonClass, inputClass, type Act } from './styles'
 
@@ -313,10 +313,8 @@ function ExperienceForm({ draft: initial, taken, act, onDone }: { draft: Experie
 
 /* ---------- Secret ---------- */
 
-export function SecretEditor({ secret, act }: { secret: { images: string[]; spotifyUrl?: string } | null; act: Act }) {
+export function SecretEditor({ secret, act }: { secret: { images: string[] } | null; act: Act }) {
   const [images, setImages] = useState(secret?.images ?? [])
-  const [spotifyUrl, setSpotifyUrl] = useState(secret?.spotifyUrl ?? '')
-  const spotifyInvalid = spotifyUrl.trim() !== '' && !spotifyTrackId(spotifyUrl.trim())
   const move = (index: number, offset: -1 | 1) =>
     setImages((list) => {
       const next = [...list]
@@ -326,7 +324,7 @@ export function SecretEditor({ secret, act }: { secret: { images: string[]; spot
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    act('Slideshow saved', (session) => saveItem(session, 'secret', 'me', { images, spotifyUrl: spotifyUrl.trim() }))
+    act('Slideshow saved', (session) => saveItem(session, 'secret', 'me', { images }))
   }
 
   return (
@@ -359,16 +357,6 @@ export function SecretEditor({ secret, act }: { secret: { images: string[]; spot
           ))}
         </ul>
       )}
-      <Field label="Spotify track link" hint="Plays in Spotify's player during the slideshow. Leave empty for no music.">
-        <input
-          type="url"
-          placeholder="https://open.spotify.com/track/…"
-          value={spotifyUrl}
-          onChange={(e) => setSpotifyUrl(e.target.value)}
-          className={inputClass}
-        />
-        {spotifyInvalid && <span className="mt-1 block text-xs text-red-300">Paste a Spotify track link (open.spotify.com/track/…)</span>}
-      </Field>
       <div className="flex flex-wrap gap-4">
         <UploadButton
           multiple
@@ -377,7 +365,7 @@ export function SecretEditor({ secret, act }: { secret: { images: string[]; spot
           act={act}
           onUploaded={(key) => setImages((list) => [...list, key])}
         />
-        <button type="submit" disabled={spotifyInvalid} className={buttonClass('primary')}>
+        <button type="submit" className={buttonClass('primary')}>
           Save slideshow
         </button>
       </div>
