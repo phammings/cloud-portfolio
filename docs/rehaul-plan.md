@@ -9,7 +9,10 @@
 - [x] Stage 3: public site (`frontend/`), not deployed until Stage 5
   - Vite 8 + React 19 + TS + Tailwind v4 + React Router 8 (v8 was latest, not v7).
   - `VITE_API_URL` is in `frontend/.env`. In dev, `media/` loads from the live site (`.env.development`), and in prod it's same-origin.
-- [ ] Stage 4: admin
+- [x] Stage 4: admin (`/admin`, not deployed until Stage 5)
+  - Logs in with an email/password form against `POST /login`, not the hosted UI + `oidc-client-ts` as first planned: there are no redirects and no extra dependency. The token is kept in sessionStorage until it expires (1 h).
+  - Profile form, project and experience lists (create/edit/delete/reorder), image and resume uploads via presigned POST. Lazy-loaded chunk (~16 KB).
+  - Replaced uploads are not deleted from S3 (harmless leftovers under `media/`).
 - [ ] Stage 5: cutover and cleanup
 
 ## Context

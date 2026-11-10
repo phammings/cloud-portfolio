@@ -1,20 +1,31 @@
-import { createContext, use, useEffect, useState, type ReactNode } from 'react'
+import { createContext, use, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { getContent, type Content } from './api'
 
-type State = { content: Content | null; error: Error | null }
+type State = { content: Content | null; error: Error | null; reload: () => Promise<void> }
 
-const ContentContext = createContext<State>({ content: null, error: null })
+const ContentContext = createContext<State>({ content: null, error: null, reload: async () => {} })
 
 export function ContentProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<State>({ content: null, error: null })
+  const [content, setContent] = useState<Content | null>(null)
+  const [error, setError] = useState<Error | null>(null)
+
+  const reload = useCallback(
+    () =>
+      getContent()
+        .then((next) => {
+          setContent(next)
+          setError(null)
+        })
+        .catch((err: Error) => setError(err)),
+    [],
+  )
 
   useEffect(() => {
-    getContent()
-      .then((content) => setState({ content, error: null }))
-      .catch((error: Error) => setState({ content: null, error }))
-  }, [])
+    reload()
+  }, [reload])
 
-  return <ContentContext value={state}>{children}</ContentContext>
+  const value = useMemo(() => ({ content, error, reload }), [content, error, reload])
+  return <ContentContext value={value}>{children}</ContentContext>
 }
 
 export const useContent = () => use(ContentContext)
