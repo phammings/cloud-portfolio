@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useRef, useState, type MouseEvent } from 'react'
 import { FaGithub, FaLinkedinIn } from 'react-icons/fa6'
 import { FiFileText, FiMail, FiMenu, FiX } from 'react-icons/fi'
 import { Link, NavLink, Outlet } from 'react-router'
 import { mediaUrl } from '../api'
 import { useContent } from '../content'
+import { SecretSlideshow } from './SecretSlideshow'
 import { Starfield } from './Starfield'
 
 const YEAR = new Date().getFullYear()
@@ -17,16 +18,46 @@ const LINKS = [
 
 export function Layout() {
   const [open, setOpen] = useState(false)
+  const [secretOpen, setSecretOpen] = useState(false)
+  const logoClicks = useRef<number[]>([])
+  const logo = useRef<HTMLAnchorElement>(null)
   const { content } = useContent()
   const name = content?.profile?.name ?? 'Ryan Pham'
+  const secretImages = content?.secret?.images ?? []
+
+  // Easter egg: three logo clicks within a second open the secret slideshow.
+  const onLogoClick = (event: MouseEvent) => {
+    setOpen(false)
+    const now = performance.now()
+    logoClicks.current = [...logoClicks.current.filter((t) => now - t < 1000), now]
+    if (logoClicks.current.length >= 3 && secretImages.length > 0) {
+      logoClicks.current = []
+      event.preventDefault()
+      setSecretOpen(true)
+    }
+  }
 
   return (
     <div className="flex min-h-dvh flex-col overflow-x-clip">
       <Starfield />
+      {secretOpen && (
+        <SecretSlideshow
+          images={secretImages}
+          onClose={() => {
+            setSecretOpen(false)
+            logo.current?.focus()
+          }}
+        />
+      )}
 
       <header className="sticky top-0 z-20 border-b border-line/60 bg-ink/80 backdrop-blur">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-8">
-          <Link to="/" className="grid size-10 place-items-center border-2 border-paper pl-[0.16em] text-sm font-bold tracking-wider" onClick={() => setOpen(false)}>
+          <Link
+            ref={logo}
+            to="/"
+            className="grid size-10 place-items-center border-2 border-paper pl-[0.16em] text-sm font-bold tracking-wider select-none"
+            onClick={onLogoClick}
+          >
             {initials(name)}
           </Link>
 

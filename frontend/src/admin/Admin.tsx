@@ -1,10 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import { useContent } from '../content'
 import { clearSession, loadSession, login, SessionExpired, type Session } from './adminApi'
-import { ExperienceEditor, ProfileEditor, ProjectsEditor } from './editors'
+import { ExperienceEditor, ProfileEditor, ProjectsEditor, SecretEditor } from './editors'
 import { buttonClass, inputClass, type Act } from './styles'
 
-const TABS = ['Profile', 'Projects', 'Experience'] as const
+const TABS = ['Profile', 'Projects', 'Experience', 'Secret'] as const
 type Tab = (typeof TABS)[number]
 type Notice = { kind: 'ok' | 'error'; text: string }
 
@@ -94,6 +94,7 @@ export default function Admin() {
             {tab === 'Profile' && <ProfileEditor profile={content.profile} act={act} />}
             {tab === 'Projects' && <ProjectsEditor projects={content.projects} act={act} />}
             {tab === 'Experience' && <ExperienceEditor experience={content.experience} act={act} />}
+            {tab === 'Secret' && <SecretEditor images={content.secret?.images ?? []} act={act} />}
           </fieldset>
         </>
       )}

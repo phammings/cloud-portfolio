@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
-import { FiArrowDown, FiArrowUp, FiTrash2, FiUpload } from 'react-icons/fi'
+import { FiArrowDown, FiArrowLeft, FiArrowRight, FiArrowUp, FiTrash2, FiUpload } from 'react-icons/fi'
 import { mediaUrl, type Experience, type Profile, type Project } from '../api'
 import { deleteItem, saveItem, slugify, uploadFile, UPLOAD_TYPES, type ItemType } from './adminApi'
 import { buttonClass, inputClass, type Act } from './styles'
@@ -311,6 +311,68 @@ function ExperienceForm({ draft: initial, taken, act, onDone }: { draft: Experie
   )
 }
 
+/* ---------- Secret ---------- */
+
+export function SecretEditor({ images: saved, act }: { images: string[]; act: Act }) {
+  const [images, setImages] = useState(saved)
+  const move = (index: number, offset: -1 | 1) =>
+    setImages((list) => {
+      const next = [...list]
+      ;[next[index], next[index + offset]] = [next[index + offset], next[index]]
+      return next
+    })
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault()
+    act('Slideshow saved', (session) => saveItem(session, 'secret', 'me', { images }))
+  }
+
+  return (
+    <form onSubmit={submit} className="grid max-w-4xl gap-6">
+      <p className="text-sm text-muted">
+        Click the site logo 3 times quickly to play these images as a fullscreen slideshow. Changes apply once you save.
+      </p>
+      {images.length === 0 ? (
+        <p className="text-dim">No images yet.</p>
+      ) : (
+        <ul className="grid gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {images.map((image, i) => (
+            <li key={image} className="border border-line bg-panel p-2">
+              <img src={mediaUrl(image)} alt={`Slide ${i + 1}`} className="aspect-square w-full object-cover" />
+              <div className="mt-2 flex items-center justify-between text-xs">
+                <span className="text-dim">#{i + 1}</span>
+                <span className="flex gap-1">
+                  <IconButton label="Move earlier" disabled={i === 0} onClick={() => move(i, -1)}>
+                    <FiArrowLeft />
+                  </IconButton>
+                  <IconButton label="Move later" disabled={i === images.length - 1} onClick={() => move(i, 1)}>
+                    <FiArrowRight />
+                  </IconButton>
+                  <IconButton label={`Remove slide ${i + 1}`} onClick={() => setImages((list) => list.filter((x) => x !== image))}>
+                    <FiTrash2 className="text-red-300" />
+                  </IconButton>
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="flex flex-wrap gap-4">
+        <UploadButton
+          multiple
+          accept={UPLOAD_TYPES.filter((t) => t.startsWith('image/')).join(',')}
+          label="Add images"
+          act={act}
+          onUploaded={(key) => setImages((list) => [...list, key])}
+        />
+        <button type="submit" className={buttonClass('primary')}>
+          Save slideshow
+        </button>
+      </div>
+    </form>
+  )
+}
+
 /* ---------- Shared ---------- */
 
 type Ordered = { id: string; order: number }
@@ -391,18 +453,35 @@ function ItemList<T extends Ordered>({
 
 const withoutId = <T extends { id: string }>({ id: _id, ...rest }: T) => rest
 
-function UploadButton({ accept, label, act, onUploaded }: { accept: string; label: string; act: Act; onUploaded: (key: string) => void }) {
+function UploadButton({
+  accept,
+  label,
+  multiple,
+  act,
+  onUploaded,
+}: {
+  accept: string
+  label: string
+  multiple?: boolean
+  act: Act
+  onUploaded: (key: string) => void
+}) {
   return (
     <label className={`${buttonClass('ghost')} cursor-pointer`}>
       <FiUpload /> {label}
       <input
         type="file"
         accept={accept}
+        multiple={multiple}
         className="sr-only"
         onChange={(event) => {
-          const file = event.target.files?.[0]
+          const files = [...(event.target.files ?? [])]
           event.target.value = '' // allow picking the same file again
-          if (file) act(`Uploaded ${file.name}`, async (session) => onUploaded(await uploadFile(session, file)))
+          if (files.length === 0) return
+          const done = files.length === 1 ? `Uploaded ${files[0].name}` : `Uploaded ${files.length} files`
+          act(done, async (session) => {
+            for (const file of files) onUploaded(await uploadFile(session, file))
+          })
         }}
       />
     </label>

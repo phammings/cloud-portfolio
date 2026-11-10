@@ -2,7 +2,7 @@ const API_URL = import.meta.env.VITE_API_URL
 const SESSION_KEY = 'portfolio-admin-session'
 
 export type Session = { token: string; expiresAt: number }
-export type ItemType = 'profile' | 'project' | 'experience'
+export type ItemType = 'profile' | 'secret' | 'project' | 'experience'
 
 /** The access token has expired or was rejected; the user has to log in again. */
 export class SessionExpired extends Error {}
@@ -64,9 +64,33 @@ export const deleteItem = (session: Session, type: ItemType, id: string) =>
 export const UPLOAD_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'image/webp', 'image/gif']
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 
+const MAX_IMAGE_EDGE = 2400 // px; phone photos are ~4000px and several MB
+
+/**
+ * Downscales large photos and re-encodes them in the browser. Re-encoding through a canvas also drops all
+ * metadata (EXIF GPS location, camera details), since these files end up publicly readable. GIFs are left
+ * alone so animations survive.
+ */
+async function prepareImage(file: File): Promise<File> {
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return file
+  const bitmap = await createImageBitmap(file) // applies EXIF rotation
+  const scale = Math.min(1, MAX_IMAGE_EDGE / Math.max(bitmap.width, bitmap.height))
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.round(bitmap.width * scale)
+  canvas.height = Math.round(bitmap.height * scale)
+  canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+  bitmap.close()
+
+  const type = file.type === 'image/png' ? 'image/png' : 'image/jpeg'
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, type, 0.85))
+  if (!blob) return file
+  return new File([blob], file.name.replace(/\.\w+$/, type === 'image/png' ? '.png' : '.jpg'), { type })
+}
+
 /** Uploads straight to S3 with a presigned POST and returns the stored key (e.g. media/<id>/resume.pdf). */
-export async function uploadFile(session: Session, file: File): Promise<string> {
-  if (!UPLOAD_TYPES.includes(file.type)) throw new Error('Only PDF, PNG, JPEG, WebP or GIF files can be uploaded')
+export async function uploadFile(session: Session, original: File): Promise<string> {
+  if (!UPLOAD_TYPES.includes(original.type)) throw new Error('Only PDF, PNG, JPEG, WebP or GIF files can be uploaded')
+  const file = await prepareImage(original)
   if (file.size > MAX_UPLOAD_BYTES) throw new Error('Files must be 10 MB or smaller')
 
   const { key, url, fields } = await authed<{ key: string; url: string; fields: Record<string, string> }>(

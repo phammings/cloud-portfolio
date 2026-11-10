@@ -38,6 +38,7 @@ export type Experience = {
 
 export type Content = {
   profile: Profile | null
+  secret: { images: string[] } | null
   projects: Project[]
   experience: Experience[]
 }
