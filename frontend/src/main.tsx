@@ -4,7 +4,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import { Layout } from './components/Layout'
 import { ContentProvider } from './content'
 import './index.css'
-import { About } from './pages/About'
 import { Experience } from './pages/Experience'
 import { Landing } from './pages/Landing'
 import { NotFound } from './pages/NotFound'
@@ -20,7 +19,6 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <Landing /> },
-      { path: 'about', element: <About /> },
       { path: 'projects', element: <Projects /> },
       { path: 'projects/:id', element: <ProjectDetail /> },
       { path: 'experience', element: <Experience /> },

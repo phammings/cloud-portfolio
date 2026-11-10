@@ -10,7 +10,6 @@ import { Starfield } from './Starfield'
 const YEAR = new Date().getFullYear()
 
 const LINKS = [
-  { to: '/about', label: 'About' },
   { to: '/projects', label: 'Projects' },
   { to: '/experience', label: 'Experience' },
   { to: '/resume', label: 'Resume' },

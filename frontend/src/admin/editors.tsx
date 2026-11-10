@@ -41,7 +41,7 @@ export function ProfileEditor({ profile, act }: { profile: Profile | null; act: 
           <input name="tagline" required defaultValue={profile?.tagline} className={inputClass} />
         </Field>
       </div>
-      <Field label="About" hint="One paragraph per line. The first paragraph appears on the landing page.">
+      <Field label="About" hint="One paragraph per line. The first paragraph is the intro on the landing page.">
         <textarea name="about" rows={8} defaultValue={profile?.about} className={inputClass} />
       </Field>
       <div className="grid gap-6 sm:grid-cols-2">
