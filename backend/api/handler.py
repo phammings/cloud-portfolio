@@ -16,8 +16,9 @@ COGNITO_CLIENT_ID = os.environ.get("COGNITO_CLIENT_ID", "")
 
 # SK prefix -> key in the /content response
 COLLECTIONS = {"PROJECT#": "projects", "EXPERIENCE#": "experience"}
-# {type} path param -> SK prefix. Profile is a single item, so its {id} is ignored.
+# {type} path param -> SK prefix for collections, and -> SK for single items (whose {id} is ignored).
 ITEM_TYPES = {"project": "PROJECT#", "experience": "EXPERIENCE#"}
+SINGLE_ITEMS = {"profile": "PROFILE", "secret": "SECRET"}
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
 MAX_BODY_BYTES = 100_000
 UPLOAD_TYPES = {"application/pdf", "image/png", "image/jpeg", "image/webp", "image/gif"}
@@ -66,12 +67,13 @@ def get_content():
             break
         kwargs["ExclusiveStartKey"] = page["LastEvaluatedKey"]
 
-    content = {"profile": None, "projects": [], "experience": []}
+    content = {"profile": None, "secret": None, "projects": [], "experience": []}
     for item in items:
         sk = item.pop("SK")
         item.pop("PK")
-        if sk == "PROFILE":
-            content["profile"] = item
+        single = next((name for name, key in SINGLE_ITEMS.items() if key == sk), None)
+        if single:
+            content[single] = item
             continue
         for prefix, name in COLLECTIONS.items():
             if sk.startswith(prefix):
@@ -95,10 +97,10 @@ def increment_views():
 def _sort_key(event):
     params = event.get("pathParameters") or {}
     item_type, item_id = params.get("type"), params.get("id", "")
-    if item_type == "profile":
-        return "PROFILE"
+    if item_type in SINGLE_ITEMS:
+        return SINGLE_ITEMS[item_type]
     if item_type not in ITEM_TYPES:
-        raise BadRequest(f"type must be one of: profile, {', '.join(ITEM_TYPES)}")
+        raise BadRequest(f"type must be one of: {', '.join([*SINGLE_ITEMS, *ITEM_TYPES])}")
     if not ID_PATTERN.match(item_id):
         raise BadRequest("id must be lowercase letters, digits and dashes (max 64)")
     return ITEM_TYPES[item_type] + item_id

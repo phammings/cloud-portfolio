@@ -20,6 +20,7 @@ class TestHandler(unittest.TestCase):
             {
                 "Items": [
                     {"PK": "SITE", "SK": "PROFILE", "name": "Ryan"},
+                    {"PK": "SITE", "SK": "SECRET", "images": ["media/x/a.jpg"]},
                     {"PK": "SITE", "SK": "PROJECT#b", "title": "Second", "order": Decimal(2)},
                 ],
                 "LastEvaluatedKey": {"PK": "SITE", "SK": "PROJECT#b"},
@@ -36,6 +37,7 @@ class TestHandler(unittest.TestCase):
 
         self.assertEqual(status, 200)
         self.assertEqual(body["profile"], {"name": "Ryan"})
+        self.assertEqual(body["secret"], {"images": ["media/x/a.jpg"]})
         self.assertEqual([p["id"] for p in body["projects"]], ["a", "b"])
         self.assertEqual(body["experience"], [{"id": "x", "company": "Acme"}])
         self.assertEqual(mock_table.query.call_count, 2)
@@ -71,6 +73,11 @@ class TestHandler(unittest.TestCase):
     def test_profile_is_a_single_item(self, mock_table):
         call("PUT /items/{type}/{id}", '{"name": "Ryan"}', type="profile", id="anything")
         self.assertEqual(mock_table.put_item.call_args.kwargs["Item"]["SK"], "PROFILE")
+
+    @patch("handler.table")
+    def test_secret_is_a_single_item(self, mock_table):
+        call("PUT /items/{type}/{id}", '{"images": []}', type="secret", id="me")
+        self.assertEqual(mock_table.put_item.call_args.kwargs["Item"]["SK"], "SECRET")
 
     @patch("handler.table")
     def test_delete_experience(self, mock_table):

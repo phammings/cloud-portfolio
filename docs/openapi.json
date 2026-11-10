@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Portfolio API",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "description": "portfolio-api. Public: GET /content, POST /views, POST /login. Admin routes need the accessToken from POST /login as a Bearer token (or a token from the Cognito hosted login, OAuth2 code + PKCE)."
   },
   "servers": [
@@ -68,11 +68,12 @@
             "type": "string",
             "enum": [
               "profile",
+              "secret",
               "project",
               "experience"
             ]
           },
-          "description": "profile is a single item, so its id is ignored (use any value, e.g. me)"
+          "description": "profile and secret are single items, so their id is ignored (use any value, e.g. me). secret holds {images: [...]} for the logo easter-egg slideshow."
         },
         {
           "name": "id",
@@ -370,12 +371,25 @@
               "type": "object",
               "additionalProperties": true
             }
+          },
+          "secret": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "images": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "required": [
           "profile",
           "projects",
-          "experience"
+          "experience",
+          "secret"
         ]
       },
       "Error": {
