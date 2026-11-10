@@ -34,5 +34,6 @@ override.tf.json
 terraform.rc
 
 __pycache__
+.pytest_cache
 # Built by archive_file at plan time
-api/handler.zip
+terraform/.build/

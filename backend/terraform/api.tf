@@ -28,10 +28,20 @@ resource "aws_dynamodb_table" "portfolio" {
   }
 }
 
+# The Lambda's code: the whole app/v1/portfolio_api package, minus tests and local caches.
+# Its modules sit at the zip root, so the handler is app.lambda_handler.
 data "archive_file" "api" {
   type        = "zip"
-  source_file = "${path.module}/api/handler.py"
-  output_path = "${path.module}/api/handler.zip"
+  source_dir  = "${path.module}/../app/v1/portfolio_api"
+  output_path = "${path.module}/.build/portfolio_api.zip"
+  excludes = [
+    "tests",
+    "conftest.py",
+    "**/__pycache__",
+    "**/__pycache__/**",
+    ".pytest_cache",
+    ".pytest_cache/**",
+  ]
 }
 
 resource "aws_iam_role" "api" {
@@ -69,7 +79,7 @@ resource "aws_lambda_function" "api" {
   role             = aws_iam_role.api.arn
   filename         = data.archive_file.api.output_path
   source_code_hash = data.archive_file.api.output_base64sha256
-  handler          = "handler.lambda_handler"
+  handler          = "app.lambda_handler"
   runtime          = "python3.14"
   architectures    = ["arm64"]
   timeout          = 10
