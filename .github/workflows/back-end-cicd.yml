@@ -1,9 +1,19 @@
 name: backend-Terraform
 
 on:
+  workflow_dispatch:
   push:
     branches:
     - main
+    paths:
+    - 'backend/**'
+    - '.github/workflows/back-end-cicd.yml'
+
+# Queue runs instead of overlapping: two applies at once fight over the state lock.
+# Never cancel one mid-apply.
+concurrency:
+  group: backend-terraform
+  cancel-in-progress: false
 
 jobs:
   terraform_apply:
