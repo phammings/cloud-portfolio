@@ -25,11 +25,12 @@ export function Layout() {
   const name = content?.profile?.name ?? 'Ryan Pham'
   const secretImages = content?.secret?.images ?? []
 
-  // Easter egg: three logo clicks within a second open the secret slideshow.
+  // Easter egg: three logo clicks within 1.5s open the secret slideshow (roomy enough for slow phones,
+  // where the first click also navigates home).
   const onLogoClick = (event: MouseEvent) => {
     setOpen(false)
     const now = performance.now()
-    logoClicks.current = [...logoClicks.current.filter((t) => now - t < 1000), now]
+    logoClicks.current = [...logoClicks.current.filter((t) => now - t < 1500), now]
     if (logoClicks.current.length >= 3 && secretImages.length > 0) {
       logoClicks.current = []
       event.preventDefault()
