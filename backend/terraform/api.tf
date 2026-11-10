@@ -26,6 +26,12 @@ resource "aws_dynamodb_table" "portfolio" {
   point_in_time_recovery {
     enabled = true
   }
+
+  # Changing the name or keys would make Terraform replace the table and wipe all content.
+  # This makes any plan that destroys it fail; remove it deliberately if that's ever intended.
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # The Lambda's code: the whole app/v1/portfolio_api package, minus tests and local caches.
